@@ -17,6 +17,10 @@ pip install scipy
 pip install moviepy
 ```
 
+# Checkpoints
+
+Para cargar los pesos de los modelos Resnet, SlowFast y MViT, utilice los siguientes [pesos](https://github.com/facebookresearch/SlowFast/blob/main/MODEL_ZOO.md).
+
 # How to run
 
 ## I3D
