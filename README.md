@@ -21,6 +21,12 @@ pip install moviepy
 
 To load weights for Resnet, SlowFast and MViT models, use the following [weights](https://github.com/facebookresearch/SlowFast/blob/main/MODEL_ZOO.md).
 
+# TO-DO
+
+- [ ] Change to ffmpeg the resize function of the videos.
+- [ ] Generate a function to get the features in paralell.
+- [ ] Analyze how the size of the input influences the feature extractor.
+
 # How to run
 
 ## I3D

@@ -83,6 +83,7 @@ class VideoSet(torch.utils.data.Dataset):
             frames = None
 
             for in_frame in video_clip.iter_frames(fps=self.in_fps):
+                # change the resize with FFMPEG
                 in_frame = cv2.resize(
                     in_frame,
                     (self.sample_width, self.sample_height),
