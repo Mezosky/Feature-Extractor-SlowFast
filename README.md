@@ -1,8 +1,6 @@
 # Features Extractor SlowFast
 
-The next code is focus to get features from the SlowFast library of Facebook. The given
-
-This code was writed with the help of the next repo (thanks you very much!): https://github.com/tridivb/slowfast_feature_extractor
+The next code is focus to get features from the SlowFast library of Facebook.
 
 Note: Sometimes `moviepy` can give some issues to run the code, in that case please try:
 it
@@ -10,7 +8,6 @@ it
 pip uninstall moviepy
 pip install moviepy
 ```
-
 # Installation
 
 To install and execute the current code you must install the [SlowFast library](https://github.com/facebookresearch/SlowFast/blob/main/INSTALL.md).
