@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+checkpoints/*
+videos_input/*
+features_output/*

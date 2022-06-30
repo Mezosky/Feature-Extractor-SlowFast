@@ -1,0 +1,88 @@
+absl-py==1.1.0
+antlr4-python3-runtime==4.9.3
+av @ file:///home/conda/feedstock_root/build_artifacts/av_1650456892511/work
+black==22.3.0
+brotlipy==0.7.0
+cachetools==5.2.0
+certifi==2022.6.15
+cffi @ file:///home/builder/ci_310/cffi_1642753365720/work
+charset-normalizer @ file:///tmp/build/80754af9/charset-normalizer_1630003229654/work
+click==8.1.3
+cloudpickle==2.1.0
+cryptography @ file:///tmp/build/80754af9/cryptography_1652101588599/work
+cycler==0.11.0
+Cython==0.29.30
+decorator==4.4.2
+-e git+https://github.com/facebookresearch/detectron2.git@224cd2318fdb45b5e22bbb861ee9711ee52c8b75#egg=detectron2
+fairscale==0.4.6
+ffmpeg-python==0.2.0
+fonttools==4.33.3
+future @ file:///home/builder/ci_310/future_1640790123501/work
+fvcore @ git+https://github.com/facebookresearch/fvcore.git@b120a6d3c01c238e6e99312916bf61d1f51cdb07
+google-auth==2.8.0
+google-auth-oauthlib==0.4.6
+grpcio==1.47.0
+hydra-core==1.2.0
+idna @ file:///tmp/build/80754af9/idna_1637925883363/work
+imageio==2.19.3
+imageio-ffmpeg==0.4.7
+iopath==0.1.9
+kiwisolver==1.4.3
+Markdown==3.3.7
+matplotlib==3.5.2
+mkl-fft==1.3.1
+mkl-random @ file:///home/builder/ci_310/mkl_random_1641843545607/work
+mkl-service==2.4.0
+moviepy==1.0.3
+mypy-extensions==0.4.3
+networkx==2.8.4
+numpy @ file:///opt/conda/conda-bld/numpy_and_numpy_base_1652801679809/work
+oauthlib==3.2.0
+omegaconf==2.2.2
+opencv-python==4.6.0.66
+packaging==21.3
+pandas==1.4.3
+parameterized==0.8.1
+parse==1.19.0
+pathspec==0.9.0
+Pillow==9.0.1
+platformdirs==2.5.2
+portalocker==2.4.0
+proglog==0.1.10
+protobuf==3.19.4
+psutil @ file:///home/builder/ci_310/psutil_1640792629460/work
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
+pycocotools==2.0.4
+pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
+pydot==1.4.2
+pyOpenSSL @ file:///opt/conda/conda-bld/pyopenssl_1643788558760/work
+pyparsing==3.0.9
+PySocks @ file:///home/builder/ci_310/pysocks_1640793678128/work
+python-dateutil==2.8.2
+pytorchvideo @ git+https://github.com/facebookresearch/pytorchvideo.git@06360f462d30765943cf8ab6c228ca88c86aabbf
+pytz==2022.1
+PyYAML==6.0
+requests @ file:///opt/conda/conda-bld/requests_1641824580448/work
+requests-oauthlib==1.3.1
+rsa==4.8
+scipy==1.8.1
+simplejson==3.17.6
+six @ file:///tmp/build/80754af9/six_1644875935023/work
+sklearn==0.0
+-e git+https://github.com/facebookresearch/SlowFast.git@1aebd71a2efad823d52b827a3deaf15a56cf4932#egg=slowfast
+tabulate==0.8.10
+tensorboard==2.9.1
+tensorboard-data-server==0.6.1
+tensorboard-plugin-wit==1.8.1
+termcolor==1.1.0
+timm==0.5.4
+tomli==2.0.1
+torch==1.11.0
+torchaudio==0.11.0
+torchvision==0.12.0
+tqdm==4.64.0
+typing_extensions @ file:///opt/conda/conda-bld/typing_extensions_1647553014482/work
+urllib3 @ file:///opt/conda/conda-bld/urllib3_1650637206367/work
+Werkzeug==2.1.2
+yacs==0.1.8
