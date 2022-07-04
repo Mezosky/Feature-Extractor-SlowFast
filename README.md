@@ -64,5 +64,5 @@ python multiple_runs.py --cfg "./configs/MVIT_B_32x3_CONV_ALL.yaml"
 # Questions
 
 - What is the CROP size and JITTER size?.
-- is 320:240 the size of video?. This is because i saw in the yaml of the slowfast different text_crop_size.
+- is 320:240 the size of video?. This is because I saw in the yaml of the slowfast different text_crop_size.
 - We may change the frames per second on the videos? 
