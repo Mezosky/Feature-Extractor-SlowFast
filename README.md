@@ -57,6 +57,10 @@ python run_net.py --cfg "./configs/MVIT_B_16x4_CONV.yaml"
 python run_net.py --cfg "./configs/MVIT_B_32x3_CONV.yaml"
 ```
 
+```python
+python multiple_runs.py --cfg "./configs/MVIT_B_32x3_CONV_ALL.yaml"
+```
+
 # Questions
 
 - What is the CROP size and JITTER size?.
