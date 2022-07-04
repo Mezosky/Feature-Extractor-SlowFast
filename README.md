@@ -23,9 +23,15 @@ To load weights for Resnet, SlowFast and MViT models, use the following [weights
 
 # TO-DO
 
-- [ ] Change to ffmpeg the resize function of the videos.
-- [ ] Generate a function to get the features in paralell.
+- [X] Change to ffmpeg the resize function of the videos.
+- [X] Generate a function to get the features in paralell.
+- [X] Add the creation of csv in test.py
+- [X] Add args to test.py and add an extra run_net.py (solved with the yaml)
 - [ ] Analyze how the size of the input influences the feature extractor.
+- [X] Modify the run_net.py to process different video_list files. (`multiples_run.py`)
+    - [X] Create get_features function to process the features.
+    - [X] Modify get_features to process multiples vid_list_i.csv
+- [ ] Check the code and change more things in `get_features`
 
 # How to run
 
@@ -50,3 +56,9 @@ python run_net.py --cfg "./configs/MVIT_B_16x4_CONV.yaml"
 ```python
 python run_net.py --cfg "./configs/MVIT_B_32x3_CONV.yaml"
 ```
+
+# Questions
+
+- What is the CROP size and JITTER size?.
+- is 320:240 the size of video?. This is because i saw in the yaml of the slowfast different text_crop_size.
+- We may change the frames per second on the videos? 

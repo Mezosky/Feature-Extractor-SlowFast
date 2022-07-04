@@ -1,7 +1,6 @@
 import slowfast.config.defaults as defcfg
 import slowfast.utils.checkpoint as cu
 
-
 # -----------------------------------------------------------------------------
 # Additional Data options
 # -----------------------------------------------------------------------------
@@ -25,28 +24,32 @@ defcfg._C.DATA.IMG_FILE_EXT = ".jpg"
 defcfg._C.DATA.IMG_FILE_FORMAT = "frame_{:010d}.jpg"
 
 # Sampling height and width of each frame
-defcfg._C.DATA.SAMPLE_SIZE = [256, 256]
+defcfg._C.DATA.SAMPLE_SIZE = [320, 240]
+
+# Number of multiple process to run
+defcfg._C.MULTIPLE_PROCESS = 3
+
+# Number of iteration
+defcfg._C.ITERATION = None
 
 def get_cfg():
     """
     Get a copy of the default config.
     """
-    return defcfg._assert_and_infer_cfg(defcfg._C.clone())
+    return defcfg.assert_and_infer_cfg(defcfg._C.clone())
 
-
-def load_config(args):
+def load_config(args, path_to_config=None):
     """
     Given the arguemnts, load and initialize the configs.
     Args:
         args (argument): arguments includes `shard_id`, `num_shards`,
             `init_method`, `cfg_file`, and `opts`.
     """
-    
     # Setup cfg.
     cfg = get_cfg()
     # Load config from cfg.
-    if args.cfg_file is not None:
-        cfg.merge_from_file(args.cfg_file)
+    if path_to_config is not None:
+        cfg.merge_from_file(path_to_config)
     # Load config from command line, overwrite config from opts.
     if args.opts is not None:
         cfg.merge_from_list(args.opts)
@@ -59,10 +62,7 @@ def load_config(args):
         cfg.RNG_SEED = args.rng_seed
     if hasattr(args, "output_dir"):
         cfg.OUTPUT_DIR = args.output_dir
-    if hasattr(args, "set_gpu"):
-        cfg.SET_GPU = args.set_gpu
 
     # Create the checkpoint dir.
-    # cu.make_checkpoint_dir(cfg.OUTPUT_DIR)
-
+    cu.make_checkpoint_dir(cfg.OUTPUT_DIR)
     return cfg

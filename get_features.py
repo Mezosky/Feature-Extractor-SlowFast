@@ -9,7 +9,6 @@ import pandas as pd
 import torch
 import os
 import time
-from tqdm import tqdm
 import av
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
@@ -44,7 +43,7 @@ def create_csv(path, max_files='all'):
     entries = os.listdir(path)
     entries = [v.split(".")[0] for v in entries]
     
-    path_csv = path + '/vid_list.csv'
+    path_csv = path + '/videos_list.csv'
     if os.path.exists(path_csv):
         os.remove(path_csv)
 
@@ -56,7 +55,7 @@ def create_csv(path, max_files='all'):
         indices = np.array_split(df.index, max_files)
         for i in range(max_files):
             df_i = df.loc[[indices[i]]]
-            df.to_csv(path + f'/vid_list_{i}.csv', index=False, header=False)
+            df.to_csv(path + f'/videos_list_{i}.csv', index=False, header=False)
 
 
 @torch.no_grad()
@@ -75,7 +74,7 @@ def perform_inference(test_loader, model, cfg):
 
     feat_arr = None
 
-    for inputs in tqdm(test_loader):
+    for inputs in test_loader:
         # Transfer the data to the current GPU device.
         if isinstance(inputs, (list,)):
             for i in range(len(inputs)):
@@ -133,21 +132,25 @@ def test(cfg):
     cu.load_test_checkpoint(cfg, model)
 
     vid_root = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, cfg.DATA.PATH_PREFIX)
-    create_csv(cfg.DATA.PATH_TO_DATA_DIR)
 
-    videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, "vid_list.csv")
+    # Check if the video list are all the videos or just a part of the list.
+    if cfg.ITERATION == None:
+        create_csv(cfg.DATA.PATH_TO_DATA_DIR)
+        videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, "videos_list.csv")
+    else:
+        videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, f"videos_list_{cfg.ITERATION}.csv")
 
-    print("Loading Video List ...")
+    print("Loading Video List...")
     with open(videos_list_file) as f:
         videos = sorted([x.strip() for x in f.readlines() if len(x.strip()) > 0])
     print("Done")
-    print("----------------------------------------------------------")
+    print("#----------------------------------------------------------#")
 
     
     rejected_vids = []
 
     print("{} videos to be processed...".format(len(videos)))
-    print("----------------------------------------------------------")
+    print("#----------------------------------------------------------#")
 
     start_time = time.time()
     for vid_no, vid in enumerate(videos):
@@ -163,7 +166,7 @@ def test(cfg):
             )
         except Exception as e:
             print("{}. {} cannot be read with error {}".format(vid_no + 1, vid, e))
-            print("----------------------------------------------------------")
+            print("#----------------------------------------------------------#")
             rejected_vids.append(vid)
             continue
 
@@ -171,7 +174,7 @@ def test(cfg):
         out_file = vid_id.split(".")[0] + ".npy"
         if os.path.exists(os.path.join(out_path, out_file)):
             print("{}. {} already exists".format(vid_no + 1, out_file))
-            print("----------------------------------------------------------")
+            print("#----------------------------------------------------------#")
             continue
 
         print("{}. Processing {}...".format(vid_no + 1, vid))
@@ -197,8 +200,8 @@ def test(cfg):
         np.save(os.path.join(out_path, out_file), feat_arr)
         del dataset
         del test_loader
-        print("Done.")
-        print("----------------------------------------------------------")
+        print("Done")
+        print("#----------------------------------------------------------#")
 
     
     print("Rejected Videos: {}".format(rejected_vids))
@@ -206,8 +209,6 @@ def test(cfg):
     end_time = time.time()
     hours, minutes, seconds = calculate_time_taken(start_time, end_time)
     print(
-        "Time taken: {} hour(s), {} minute(s) and {} second(s)".format(
-            hours, minutes, seconds
-        )
+        f"Time taken: {hours} hour(s), {minutes} minute(s) and {seconds} second(s)"
     )
-    print("----------------------------------------------------------")
+    print("#----------------------------------------------------------#")

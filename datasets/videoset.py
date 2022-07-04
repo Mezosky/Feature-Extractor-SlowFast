@@ -41,13 +41,14 @@ class VideoSet(torch.utils.data.Dataset):
         self.vid_path = vid_path
         self.vid_id = vid_id
         self.read_vid_file = read_vid_file
-        
-        self.out_size = cfg.DATA.NUM_FRAMES
-        
 
-        if isinstance(self.cfg.DATA.TEST_CROP_SIZE, int):
-            self.sample_width, self.sample_height = [self.cfg.DATA.TEST_CROP_SIZE, 
-                                                     self.cfg.DATA.TEST_CROP_SIZE]
+        self.out_size = cfg.DATA.NUM_FRAMES
+
+        if isinstance(self.cfg.DATA.SAMPLE_SIZE, int):
+            self.sample_width, self.sample_height = [self.cfg.DATA.SAMPLE_SIZE, 
+                                                     self.cfg.DATA.SAMPLE_SIZE]
+        elif isinstance(self.cfg.DATA.SAMPLE_SIZE, list):
+            self.sample_width, self.sample_height = self.cfg.DATA.SAMPLE_SIZE
         else:
             raise Exception(
                 "Error: Frame sampling size type must be an int"
@@ -68,8 +69,7 @@ class VideoSet(torch.utils.data.Dataset):
             assert os.path.exists(path_to_vid), "{} file not found".format(path_to_vid)
 
             try:
-                # Load video and fps
-                # self.video_container = container.get_video_container(path_to_vid)
+                # set the step size, the input and output
                 video_clip = VideoFileClip(path_to_vid, audio=False, fps_source="fps")
                 self.in_fps = video_clip.fps
                 self.out_fps = video_clip.fps
@@ -83,12 +83,15 @@ class VideoSet(torch.utils.data.Dataset):
             frames = None
 
             for in_frame in video_clip.iter_frames(fps=self.in_fps):
-                # change the resize with FFMPEG
-                in_frame = cv2.resize(
-                    in_frame,
-                    (self.sample_width, self.sample_height),
-                    interpolation=cv2.INTER_LINEAR,
-                )
+
+                height, width, _ = in_frame.shape
+                if height != self.sample_height and width != self.sample_width:
+                    in_frame = cv2.resize(
+                        in_frame,
+                        (self.sample_width, self.sample_height),
+                        interpolation=cv2.INTER_LINEAR
+                        )
+
                 if frames is None:
                     frames = in_frame[None, ...]
                 else:
@@ -173,8 +176,8 @@ class VideoSet(torch.utils.data.Dataset):
             (
                 3,
                 self.out_size,
-                self.cfg.DATA.TEST_CROP_SIZE,
-                self.cfg.DATA.TEST_CROP_SIZE,
+                240,#self.cfg.DATA.TEST_CROP_SIZE,
+                320#self.cfg.DATA.TEST_CROP_SIZE,
             )
         ).float()
 
