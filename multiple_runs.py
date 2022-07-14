@@ -44,12 +44,14 @@ def comprobate_run(cfg, args, parallel_job):
     cfg.ITERATION = parallel_job + 1
 
     nvidia_smi.nvmlInit()
+    # I don't know why the index has other number
     handle = nvidia_smi.nvmlDeviceGetHandleByIndex(1)
     info = nvidia_smi.nvmlDeviceGetMemoryInfo(handle)
 
     total_mem = round(info.total/(1024**3), 3)
     free_mem = round(info.free/(1024**3), 3)
 
+    # Search how to set a not manual treshold
     if free_mem > 7.9:
         if cfg.TEST.ENABLE:
             launch_job(cfg=cfg, init_method=args.init_method, func=test)
@@ -66,4 +68,5 @@ if __name__ == "__main__":
     for config_path in args.cfg_files:
         cfg = load_config(args, config_path)
         create_csv(cfg.DATA.PATH_TO_DATA_DIR, max_files=cfg.MULTIPLE_PROCESS)
+        # change the number inside the range with a parameter from cfg file
         Parallel(n_jobs=-1)(delayed(comprobate_run)(cfg, args, it) for it in range(3))

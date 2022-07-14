@@ -20,6 +20,7 @@ import slowfast.utils.misc as misc
 
 from models import build_model
 from datasets import VideoSet
+from datasets import VideoSetDecord
 
 logger = logging.get_logger(__name__)
 
@@ -176,7 +177,7 @@ def test(cfg):
 
         print("{}. Processing {}...".format(vid_no + 1, vid))
 
-        dataset = VideoSet(
+        dataset = VideoSetDecord(
             cfg, path_to_vid, vid_id, read_vid_file=True
         )
         

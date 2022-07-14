@@ -19,6 +19,7 @@ import slowfast.utils.misc as misc
 
 from models import build_model
 from datasets import VideoSet
+from datasets import VideoSetDecord
 
 logger = logging.get_logger(__name__)
 

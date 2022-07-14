@@ -196,6 +196,8 @@ class VideoSet(torch.utils.data.Dataset):
                         os.path.join(self.vid_path, self.vid_id), self.frames[ind]
                     )
 
+        print(type(frame_seg))
+
         # create the pathways
         frame_list = pack_pathway_output(self.cfg, frame_seg)
 
