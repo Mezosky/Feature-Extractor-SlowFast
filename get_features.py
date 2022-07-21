@@ -20,6 +20,7 @@ import slowfast.utils.misc as misc
 from models import build_model
 from datasets import VideoSet
 from datasets import VideoSetDecord
+from datasets import VideoSetDecord2
 
 logger = logging.get_logger(__name__)
 
@@ -180,8 +181,8 @@ def test(cfg):
 
         print("{}. Processing {}...".format(vid_no + 1, vid))
 
-        dataset = VideoSet(
-            cfg, path_to_vid, vid_id, read_vid_file=True
+        dataset = VideoSetDecord2(
+            cfg, path_to_vid, vid_id, #read_vid_file=True
         )
         
         test_loader = torch.utils.data.DataLoader(
