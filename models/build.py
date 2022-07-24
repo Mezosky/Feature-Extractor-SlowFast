@@ -10,23 +10,25 @@ from slowfast.models.video_model_builder import _POOL1, ResNet
 from .video_model_builder import MvitFeat, ResnetFeat, SlowFastFeat, X3DFeat
 from .head_helper import ResNetBasicHead, TransformerBasicHead, X3DHead
 
-logger = logging.get_logger(__name__)
+# logger = logging.get_logger(__name__)
 
-MODEL_REGISTRY = Registry("MODEL")
-MODEL_REGISTRY.__doc__ = """
-Registry for video model.
-The registered object will be called with `obj(cfg)`.
-The call should return a `torch.nn.Module` object.
-"""
+# MODEL_REGISTRY = Registry("MODEL")
+# MODEL_REGISTRY.__doc__ = """
+# Registry for video model.
+# The registered object will be called with `obj(cfg)`.
+# The call should return a `torch.nn.Module` object.
+# """
 
 
 def build_model(cfg, gpu_id=None):
     """
-    Builds the video model.
+    Builds the models to get features from videos.
     Args:
         cfg (configs): configs that contains the hyper-parameters to build the
-        backbone. Details can be seen in slowfast/config/defaults.py.
+        backbone.
         gpu_id (Optional[int]): specify the gpu index to build model.
+    Return:
+        model: model loaded and configurated for the feature extraction.
     """
     if torch.cuda.is_available():
         assert (
@@ -37,15 +39,35 @@ def build_model(cfg, gpu_id=None):
             cfg.NUM_GPUS == 0
         ), "Cuda is not available. Please set `NUM_GPUS: 0 for running on CPUs."
 
-    # Construct the model
     name = cfg.MODEL.MODEL_NAME
     print(f"Loading model... {name}")
-    # create some relevant values for the net
-    width_per_group = cfg.RESNET.WIDTH_PER_GROUP
     
-    # Select the model (our case is just slowfast)
-    if name == "SlowFast":
+    if name == "ResNet":
         pool_size = _POOL1[cfg.MODEL.ARCH]
+        width_per_group = cfg.RESNET.WIDTH_PER_GROUP
+        model = ResnetFeat(cfg)
+        model.head = ResNetBasicHead(
+                dim_in=[width_per_group * 32],
+                num_classes=cfg.MODEL.NUM_CLASSES,
+                pool_size=[None]
+                if cfg.MULTIGRID.SHORT_CYCLE
+                or cfg.MODEL.MODEL_NAME == "ContrastiveModel"
+                else [
+                    [
+                        cfg.DATA.NUM_FRAMES // pool_size[0][0],
+                        cfg.DATA.TRAIN_CROP_SIZE // 32 // pool_size[0][1],
+                        cfg.DATA.TRAIN_CROP_SIZE // 32 // pool_size[0][2],
+                    ]
+                ],
+                dropout_rate=cfg.MODEL.DROPOUT_RATE,
+                act_func=cfg.MODEL.HEAD_ACT,
+                detach_final_fc=cfg.MODEL.DETACH_FINAL_FC,
+                cfg=cfg,
+                )
+
+    elif name == "SlowFast":
+        pool_size = _POOL1[cfg.MODEL.ARCH]
+        width_per_group = cfg.RESNET.WIDTH_PER_GROUP
         model = SlowFastFeat(cfg)
         model.head = ResNetBasicHead(
                 dim_in=[
@@ -69,44 +91,17 @@ def build_model(cfg, gpu_id=None):
                         cfg.DATA.TRAIN_CROP_SIZE // 32 // pool_size[1][1],
                         cfg.DATA.TRAIN_CROP_SIZE // 32 // pool_size[1][2],
                     ],
-                ],  # None for AdaptiveAvgPool3d((1, 1, 1))
+                ],
                 dropout_rate=cfg.MODEL.DROPOUT_RATE,
                 act_func=cfg.MODEL.HEAD_ACT,
                 detach_final_fc=cfg.MODEL.DETACH_FINAL_FC,
                 cfg=cfg,
                 )
-                
-    elif name == "ResNet":
-        pool_size = _POOL1[cfg.MODEL.ARCH]
-        model = ResnetFeat(cfg)
-        model.head = ResNetBasicHead(
-                dim_in=[width_per_group * 32],
-                num_classes=cfg.MODEL.NUM_CLASSES,
-                pool_size=[None]
-                if cfg.MULTIGRID.SHORT_CYCLE
-                or cfg.MODEL.MODEL_NAME == "ContrastiveModel"
-                else [
-                    [
-                        cfg.DATA.NUM_FRAMES // pool_size[0][0],
-                        cfg.DATA.TRAIN_CROP_SIZE // 32 // pool_size[0][1],
-                        cfg.DATA.TRAIN_CROP_SIZE // 32 // pool_size[0][2],
-                    ]
-                ],  # None for AdaptiveAvgPool3d((1, 1, 1))
-                dropout_rate=cfg.MODEL.DROPOUT_RATE,
-                act_func=cfg.MODEL.HEAD_ACT,
-                detach_final_fc=cfg.MODEL.DETACH_FINAL_FC,
-                cfg=cfg,
-                )
-    
-    elif name == "MViT":
-        model = MvitFeat(cfg)
     
     elif name == "X3D":
         model = X3DFeat(cfg)
-        
         dim_out = model.head.conv_5.in_channels
         dim_inner = model.head.conv_5.out_channels
-
         spat_sz = int(math.ceil(cfg.DATA.TRAIN_CROP_SIZE / 32.0))
         model.head = X3DHead(
                 dim_in=dim_out,
@@ -118,9 +113,12 @@ def build_model(cfg, gpu_id=None):
                 act_func=cfg.MODEL.HEAD_ACT,
                 bn_lin5_on=cfg.X3D.BN_LIN5,
                 )
+    
+    elif name == "MViT":
+        model = MvitFeat(cfg)
 
     else:
-        raise Exception("You have not specified a model.")
+        raise Exception("You have not specified a video model.")
 
     print("comprobate BN.NORM_TYPE",cfg.BN.NORM_TYPE)
     if cfg.BN.NORM_TYPE == "sync_batchnorm_apex":
@@ -161,4 +159,5 @@ def build_model(cfg, gpu_id=None):
             model.register_comm_hook(
                 state=None, hook=comm_hooks_default.fp16_compress_hook
             )
+
     return model

@@ -1,8 +1,12 @@
-from turtle import forward
 import math
 import torch
 from slowfast.models.video_model_builder import ResNet, SlowFast, MViT, X3D
 from slowfast.models import MODEL_REGISTRY
+
+"""
+This module manages the step forward for different pySlowFast models. 
+The idea is to modify the forward step to obtain the characteristics of the videos.
+"""
 
 @MODEL_REGISTRY.register()
 class ResnetFeat(ResNet):
@@ -102,7 +106,6 @@ class MvitFeat(MViT):
 
 @MODEL_REGISTRY.register()
 class X3DFeat(X3D):  
-    
     def forward(self, x, bboxes=None):
         for module in self.children():
             if "X3DHead" in module._get_name():
