@@ -35,7 +35,16 @@ To load weights for Resnet, SlowFast and MViT models, use the following [weights
 - [X] Add Decord to the code
 - [X] Add a crop function to cut the image from the center
 - [ ] Compare the dataloaders
-- [ ] Create a dataloader with the charades and kinetics class from pyslowfast
+- [x] Create a dataloader with the charades and kinetics class from pyslowfast
+- [x] Add video format selector
+- [x] Add X3D encoder
+    - [X] Add X3D head
+    - [X] Add X3D forward
+    - [X] Modify head in build.py
+    - [X] Add yaml
+- [ ] X3D has a bug with the framerate, I have to check why is generating a big sampling of frames
+- [ ] Check number of frames in videos
+    - [ ] Add a fps reader to the inputs videos
 
 # How to run
 
@@ -45,10 +54,21 @@ To load weights for Resnet, SlowFast and MViT models, use the following [weights
 python run_net.py --cfg "./configs/I3D_8x8_R50.yaml"
 ```
 
+```python
+python multiple_runs.py --cfg "./configs/I3D_8x8_R50.yaml"
+```
+
+
 ## SlowFast
 
 ```python
 python run_net.py --cfg "./configs/SLOWFAST_8x8_R50.yaml"
+```
+
+## X3D
+
+```python
+python run_net.py --cfg "./configs/X3D_M.yaml"
 ```
 
 ## MVit

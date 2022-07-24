@@ -69,4 +69,4 @@ if __name__ == "__main__":
         cfg = load_config(args, config_path)
         create_csv(cfg.DATA.PATH_TO_DATA_DIR, max_files=cfg.MULTIPLE_PROCESS)
         # change the number inside the range with a parameter from cfg file
-        Parallel(n_jobs=-1)(delayed(comprobate_run)(cfg, args, it) for it in range(3))
+        Parallel(n_jobs=cfg.MULTIPLE_PROCESS)(delayed(comprobate_run)(cfg, args, it) for it in range(cfg.MULTIPLE_PROCESS))

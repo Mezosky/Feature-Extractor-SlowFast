@@ -1,6 +1,7 @@
 from turtle import forward
+import math
 import torch
-from slowfast.models.video_model_builder import ResNet, SlowFast, MViT
+from slowfast.models.video_model_builder import ResNet, SlowFast, MViT, X3D
 from slowfast.models import MODEL_REGISTRY
 
 @MODEL_REGISTRY.register()
@@ -83,7 +84,7 @@ class MvitFeat(MViT):
 
         if self.norm_stem:
             x = self.norm_stem(x)
-
+        
         thw = [T, H, W]
         for blk in self.blocks:
             x, thw = blk(x, thw)
@@ -97,4 +98,15 @@ class MvitFeat(MViT):
         feat = x.clone().detach()
 
         x = self.head(x)
+        return x, feat
+
+@MODEL_REGISTRY.register()
+class X3DFeat(X3D):  
+    
+    def forward(self, x, bboxes=None):
+        for module in self.children():
+            if "X3DHead" in module._get_name():
+                x, feat = module(x)
+            else:
+                x = module(x)
         return x, feat

@@ -116,9 +116,9 @@ class VideoSetDecord2(torch.utils.data.Dataset):
                     crop_size=crop_size,
                     random_horizontal_flip=self.cfg.DATA.RANDOM_FLIP,
                     inverse_uniform_sampling=self.cfg.DATA.INV_UNIFORM_SAMPLE,
-                    aspect_ratio=relative_aspect,
-                    scale=relative_scales,
-                    motion_shift=False,
+                    #aspect_ratio=relative_aspect,
+                    #scale=relative_scales,
+                    #motion_shift=False,
                 )
 
         return frames

@@ -162,7 +162,7 @@ def test(cfg):
 
         try:
             _ = VideoFileClip(
-                os.path.join(path_to_vid, vid_id) + ".mp4",
+                os.path.join(path_to_vid, vid_id) + cfg.DATA.VID_EXT,
                 audio=False,
                 fps_source="fps",
             )

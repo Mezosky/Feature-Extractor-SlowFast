@@ -1,16 +1,14 @@
-# TODO: Finish this block
-
+import math
 import torch
 from fvcore.common.registry import Registry
 from torch.distributed.algorithms.ddp_comm_hooks import (
-    default as comm_hooks_default,
-)
+    default as comm_hooks_default,)
 
 import slowfast.utils.logging as logging
 from slowfast.models.video_model_builder import _POOL1, ResNet
 
-from .video_model_builder import MvitFeat, ResnetFeat, SlowFastFeat
-from .head_helper import ResNetBasicHead, TransformerBasicHead
+from .video_model_builder import MvitFeat, ResnetFeat, SlowFastFeat, X3DFeat
+from .head_helper import ResNetBasicHead, TransformerBasicHead, X3DHead
 
 logger = logging.get_logger(__name__)
 
@@ -41,12 +39,12 @@ def build_model(cfg, gpu_id=None):
 
     # Construct the model
     name = cfg.MODEL.MODEL_NAME
+    print(f"Loading model... {name}")
     # create some relevant values for the net
     width_per_group = cfg.RESNET.WIDTH_PER_GROUP
-
+    
     # Select the model (our case is just slowfast)
     if name == "SlowFast":
-        print("Loaded model: SlowFast")
         pool_size = _POOL1[cfg.MODEL.ARCH]
         model = SlowFastFeat(cfg)
         model.head = ResNetBasicHead(
@@ -79,7 +77,6 @@ def build_model(cfg, gpu_id=None):
                 )
                 
     elif name == "ResNet":
-        print("Loaded model: ResNet")
         pool_size = _POOL1[cfg.MODEL.ARCH]
         model = ResnetFeat(cfg)
         model.head = ResNetBasicHead(
@@ -100,9 +97,28 @@ def build_model(cfg, gpu_id=None):
                 detach_final_fc=cfg.MODEL.DETACH_FINAL_FC,
                 cfg=cfg,
                 )
+    
     elif name == "MViT":
-        print("Loaded model: MViT")
         model = MvitFeat(cfg)
+    
+    elif name == "X3D":
+        model = X3DFeat(cfg)
+        
+        dim_out = model.head.conv_5.in_channels
+        dim_inner = model.head.conv_5.out_channels
+
+        spat_sz = int(math.ceil(cfg.DATA.TRAIN_CROP_SIZE / 32.0))
+        model.head = X3DHead(
+                dim_in=dim_out,
+                dim_inner=dim_inner,
+                dim_out=cfg.X3D.DIM_C5,
+                num_classes=cfg.MODEL.NUM_CLASSES,
+                pool_size=[cfg.DATA.NUM_FRAMES, spat_sz, spat_sz],
+                dropout_rate=cfg.MODEL.DROPOUT_RATE,
+                act_func=cfg.MODEL.HEAD_ACT,
+                bn_lin5_on=cfg.X3D.BN_LIN5,
+                )
+
     else:
         raise Exception("You have not specified a model.")
 

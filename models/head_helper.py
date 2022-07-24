@@ -1,7 +1,6 @@
 import torch
 from torch import nn
-from slowfast.models.head_helper import ResNetBasicHead, TransformerBasicHead
-from slowfast.models.head_helper import MLPHead
+from slowfast.models.head_helper import ResNetBasicHead, TransformerBasicHead, X3DHead, MLPHead
 
 class ResNetBasicHead(ResNetBasicHead):
     """
@@ -63,3 +62,45 @@ class ResNetBasicHead(ResNetBasicHead):
             return [x_proj] + time_projs, feat
         else:
             return x_proj, feat
+
+class X3DHead(X3DHead):
+    """
+    X3D head.
+    This layer performs a fully-connected projection during training, when the
+    input size is 1x1x1. It performs a convolutional projection during testing
+    when the input size is larger than 1x1x1. If the inputs are from multiple
+    different pathways, the inputs will be concatenated after pooling.
+    """
+
+    def forward(self, inputs):
+        # In its current design the X3D head is only useable for a single
+        # pathway input.
+        assert len(inputs) == 1, "Input tensor does not contain 1 pathway"
+        x = self.conv_5(inputs[0])
+        x = self.conv_5_bn(x)
+        x = self.conv_5_relu(x)
+        x = self.avg_pool(x)
+
+        x = self.lin_5(x)
+        if self.bn_lin5_on:
+            x = self.lin_5_bn(x)
+        x = self.lin_5_relu(x)
+
+        # (N, C, T, H, W) -> (N, T, H, W, C).
+        x = x.permute((0, 2, 3, 4, 1))
+
+        # Get features
+        feat = x.clone().detach()
+
+        # Perform dropout.
+        if hasattr(self, "dropout"):
+            x = self.dropout(x)
+        x = self.projection(x)
+
+        # Performs fully convlutional inference.
+        if not self.training:
+            x = self.act(x)
+            x = x.mean([1, 2, 3])
+
+        x = x.view(x.shape[0], -1)
+        return x, feat
