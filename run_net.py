@@ -3,7 +3,8 @@ from slowfast.utils.parser import parse_args #, load_config
 from configs.custom_config import load_config
 import torch
 
-from test_net import test
+#from test_net import test
+from get_features import test
 
 def main():
     """

@@ -24,7 +24,7 @@ import slowfast.utils.logging as logging
 
 
 
-logger = logging.get_logger(__name__)
+#logger = logging.get_logger(__name__)
 # Set how default a torch tensor
 decord.bridge.set_bridge('torch')
 
@@ -76,7 +76,7 @@ class VideoSetDecord2(torch.utils.data.Dataset):
 
         except Exception as e:
             logger.info(
-                "Failed to load video from {} with error {}".format(path_to_vid, e)
+                f"Failed to load video from {path_to_vid} with error {e}"
             )
 
 

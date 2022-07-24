@@ -45,6 +45,7 @@ To load weights for Resnet, SlowFast and MViT models, use the following [weights
 - [ ] X3D has a bug with the framerate, I have to check why is generating a big sampling of frames
 - [ ] Check number of frames in videos
     - [ ] Add a fps reader to the inputs videos
+- [ ] Check the output feat for each model.
 
 # How to run
 

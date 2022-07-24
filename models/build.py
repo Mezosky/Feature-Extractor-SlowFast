@@ -1,3 +1,8 @@
+"""
+Build the model with its respective hyperparameters and redefine 
+the Head using the configuration file.
+"""
+
 import math
 import torch
 from fvcore.common.registry import Registry
@@ -120,7 +125,6 @@ def build_model(cfg, gpu_id=None):
     else:
         raise Exception("You have not specified a video model.")
 
-    print("comprobate BN.NORM_TYPE",cfg.BN.NORM_TYPE)
     if cfg.BN.NORM_TYPE == "sync_batchnorm_apex":
         try:
             import apex

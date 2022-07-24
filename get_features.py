@@ -1,8 +1,9 @@
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
+"""
+Extract features for videos using pre-trained arquitectures
 
-# Modified to process a list of videos
-
-"""Extract features for videos using pre-trained networks"""
+ToDo:
+ - Clean this Code and generate a Logging.
+"""
 
 import numpy as np
 import pandas as pd
@@ -10,11 +11,11 @@ import torch
 import os
 import time
 import av
+from tqdm import tqdm
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
 import slowfast.utils.checkpoint as cu
 import slowfast.utils.distributed as du
-import slowfast.utils.logging as logging
 import slowfast.utils.misc as misc
 
 from models import build_model
@@ -22,43 +23,44 @@ from datasets import VideoSet
 from datasets import VideoSetDecord
 from datasets import VideoSetDecord2
 
-logger = logging.get_logger(__name__)
-
-
 def calculate_time_taken(start_time, end_time):
     hours = int((end_time - start_time) / 3600)
     minutes = int((end_time - start_time) / 60) - (hours * 60)
     seconds = int((end_time - start_time) % 60)
     return hours, minutes, seconds
 
-def create_csv(path, max_files='all'):
+def create_csv(path, output_path,max_files='all'):
     assert (
         type(max_files) is not int or max_files != 'all'
     ), "You must enter a int from the 1 to the N"
-
-    if max_files == 'all':
+    
+    if os.path.exists(output_path):
+        proc_v = [v.split(".")[0] for v in os.listdir(output_path)]
+        if len(proc_v) > 0:
+            print(f"Already {len(proc_v)} files have been processed")
         entries = os.listdir(path)
+        entries = [v.split(".")[0] for v in entries if v.split(".")[0] not in proc_v]
     else:
         entries = os.listdir(path)
-        entries = np.array_split(entries, max_files)
-    
-    entries = os.listdir(path)
-    entries = [v.split(".")[0] for v in entries]
-    
-    path_csv = path + '/videos_list.csv'
-    if os.path.exists(path_csv):
-        os.remove(path_csv)
+        entries = [v.split(".")[0] for v in entries]
 
     df = pd.DataFrame(entries)
 
     if max_files == 'all':
+        path_csv = path + '/videos_list.csv'
+        if os.path.exists(path_csv):
+            os.remove(path_csv)
         df.to_csv(path_csv,index=False, header=False)
+
     else:
         indices = np.array_split(df.index, max_files)
         for i in range(max_files):
-            df_i = df.loc[[indices[i]]]
-            df.to_csv(path + f'/videos_list_{i}.csv', index=False, header=False)
+            path_csv = path + f'/videos_list_{i+1}.csv'
+            if os.path.exists(path_csv):
+                os.remove(path_csv)
 
+            data_csv = df.loc[indices[i]]
+            data_csv.to_csv(path_csv, index=False, header=False)
 
 @torch.no_grad()
 def perform_inference(test_loader, model, cfg):
@@ -76,7 +78,7 @@ def perform_inference(test_loader, model, cfg):
 
     feat_arr = None
 
-    for inputs in test_loader:
+    for inputs in tqdm(test_loader):
         # Transfer the data to the current GPU device.
         if isinstance(inputs, (list,)):
             for i in range(len(inputs)):
@@ -112,24 +114,14 @@ def test(cfg):
     np.random.seed(cfg.RNG_SEED)
     torch.manual_seed(cfg.RNG_SEED)
 
-    # Create ouput folder.
+    # Comprobate and/or create ouput folder.
     output_path = os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.MODEL_NAME)
     if not os.path.exists(output_path):
         os.mkdir(output_path)
         print(f"The directory {cfg.MODEL.MODEL_NAME} was created!")
     
-    # Setup logging format.
-    logging.setup_logging(output_path)
-
-    # Print config.
-    logger.info("Test with config:")
-    logger.info(cfg)
-
     # Build the video model and print model statistics.
     model = build_model(cfg)
-
-    if du.is_master_proc() and cfg.LOG_MODEL_INFO:
-        misc.log_model_info(model, cfg, use_train_input=False)
     
     cu.load_test_checkpoint(cfg, model)
 
@@ -137,7 +129,7 @@ def test(cfg):
 
     # Check if the video list are all the videos or just a part of the list.
     if cfg.ITERATION == None:
-        create_csv(cfg.DATA.PATH_TO_DATA_DIR)
+        create_csv(cfg.DATA.PATH_TO_DATA_DIR, output_path)
         videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, "videos_list.csv")
     else:
         videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, f"videos_list_{cfg.ITERATION}.csv")
@@ -145,45 +137,32 @@ def test(cfg):
     print("Loading Video List...")
     with open(videos_list_file) as f:
         videos = sorted([x.strip() for x in f.readlines() if len(x.strip()) > 0])
-    print("Done")
     print("#----------------------------------------------------------#")
-
-    
-    rejected_vids = []
 
     print("{} videos to be processed...".format(len(videos)))
     print("#----------------------------------------------------------#")
-
+    
+    rejected_vids = []
     start_time = time.time()
     for vid_no, vid in enumerate(videos):
+
         # Create video testing loaders.
         path_to_vid = os.path.join(vid_root, os.path.split(vid)[0])
-        vid_id = os.path.split(vid)[1]
-
-        try:
-            _ = VideoFileClip(
-                os.path.join(path_to_vid, vid_id) + cfg.DATA.VID_EXT,
-                audio=False,
-                fps_source="fps",
-            )
-        except Exception as e:
-            print("{}. {} cannot be read with error {}".format(vid_no + 1, vid, e))
-            print("#----------------------------------------------------------#")
-            rejected_vids.append(vid)
-            continue
+        vid_id = os.path.split(vid)[1]      
 
         out_path = os.path.join(output_path, os.path.split(vid)[0])
         out_file = vid_id.split(".")[0] + ".npy"
-        if os.path.exists(os.path.join(out_path, out_file)):
-            print("{}. {} already exists".format(vid_no + 1, out_file))
-            print("#----------------------------------------------------------#")
-            continue
 
         print("{}. Processing {}...".format(vid_no + 1, vid))
-
-        dataset = VideoSetDecord2(
-            cfg, path_to_vid, vid_id, #read_vid_file=True
-        )
+        try:
+            dataset = VideoSetDecord2(
+                cfg, path_to_vid, vid_id, #read_vid_file=True
+                )
+        except Exception as e:
+            print(f"{vid_no + 1}. {vid} cannot be read with error {e}")
+            print("#----------------------------------------------------------#")
+            rejected_vids.append(vid)
+            continue
         
         test_loader = torch.utils.data.DataLoader(
             dataset,
@@ -199,10 +178,10 @@ def test(cfg):
         feat_arr = perform_inference(test_loader, model, cfg)
 
         os.makedirs(out_path, exist_ok=True)
+        print(out_path)
         np.save(os.path.join(out_path, out_file), feat_arr)
         del dataset
         del test_loader
-        print("Done")
         print("#----------------------------------------------------------#")
 
     
