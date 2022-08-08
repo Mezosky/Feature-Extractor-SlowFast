@@ -1,3 +1,7 @@
+"""
+Here we can find the Head's definitions for the arquitectures.
+"""
+
 import torch
 from torch import nn
 from slowfast.models.head_helper import ResNetBasicHead, TransformerBasicHead, X3DHead, MLPHead

@@ -45,6 +45,8 @@ To load weights for Resnet, SlowFast and MViT models, use the following [weights
 - [ ] X3D has a bug with the framerate, I have to check why is generating a big sampling of frames
 - [ ] Check number of frames in videos
     - [ ] Add a fps reader to the inputs videos
+- [ ] Check the output feat for each model.
+- [ ] Create a new csv in each run. each run have to detect if we have the file npy processed.
 
 # How to run
 
@@ -78,7 +80,7 @@ python run_net.py --cfg "./configs/MVIT_B_16x4_CONV.yaml"
 ```
 
 ```python
-python run_net.py --cfg "./configs/MVIT_B_32x3_CONV.yaml"
+python run_net.py --cfg "./configs/MVIT_B_32x3_CONV_ALL.yaml"
 ```
 
 ```python

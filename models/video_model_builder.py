@@ -1,12 +1,15 @@
+"""
+This module manages the step forward for different pySlowFast models. 
+The idea is to modify the forward step to obtain the characteristics of the videos.
+
+ToDo:
+- Check the features for the models.
+"""
+
 import math
 import torch
 from slowfast.models.video_model_builder import ResNet, SlowFast, MViT, X3D
 from slowfast.models import MODEL_REGISTRY
-
-"""
-This module manages the step forward for different pySlowFast models. 
-The idea is to modify the forward step to obtain the characteristics of the videos.
-"""
 
 @MODEL_REGISTRY.register()
 class ResnetFeat(ResNet):

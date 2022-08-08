@@ -29,7 +29,7 @@ import slowfast.utils.logging as logging
 decord.bridge.set_bridge('torch')
 
 @DATASET_REGISTRY.register()
-class VideoSetDecord2(torch.utils.data.Dataset):
+class VideoSetDecord3(torch.utils.data.Dataset):
     """
     Construct the untrimmed video loader, then sample
     segments from the videos. The videos are segmented by centering
@@ -69,10 +69,7 @@ class VideoSetDecord2(torch.utils.data.Dataset):
             # Load frames
             vr = VideoReader(path_to_vid, ctx=cpu(0))
             vr = vr.get_batch(range(0, len(vr), self.cfg.DATA.SAMPLING_RATE))
-
-            self.in_fps = 30
-            self.out_fps = 30
-            self.step_size = int(self.in_fps / self.out_fps)
+            self.step_size = 1
 
         except Exception as e:
             logger.info(
@@ -114,8 +111,8 @@ class VideoSetDecord2(torch.utils.data.Dataset):
                     min_scale=min_scale,
                     max_scale=max_scale,
                     crop_size=crop_size,
-                    random_horizontal_flip=self.cfg.DATA.RANDOM_FLIP,
-                    inverse_uniform_sampling=self.cfg.DATA.INV_UNIFORM_SAMPLE,
+                    # random_horizontal_flip=self.cfg.DATA.RANDOM_FLIP,
+                    # inverse_uniform_sampling=self.cfg.DATA.INV_UNIFORM_SAMPLE,
                     #aspect_ratio=relative_aspect,
                     #scale=relative_scales,
                     #motion_shift=False,
@@ -146,13 +143,16 @@ class VideoSetDecord2(torch.utils.data.Dataset):
                 self.cfg.DATA.TEST_CROP_SIZE,
                 self.cfg.DATA.TEST_CROP_SIZE,
             )
-        ).float()
-
-        start = int(index - self.step_size * self.out_size / 2)
-        end = int(index + self.step_size * self.out_size / 2)
+        ).float() 
+        
+        # sumar un step size
+        start = int((index+self.step_size)*self.out_size)
+        end   = int((index+1+self.step_size)*self.out_size)
         max_ind = self.__len__() - 1
+        if end > max_ind+1:
+            end = max_ind
 
-        for out_ind, ind in enumerate(range(start, end, self.step_size)):
+        for out_ind, ind in enumerate(range(start, end, 1)):
             if ind < 0 or ind > max_ind:
                 continue
             else:

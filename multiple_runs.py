@@ -11,13 +11,25 @@ from configs.custom_config import load_config
 
 from get_features import test
 
-def create_csv(path, max_files='all'):
+def create_csv(path, output_path,max_files='all'):
     assert (
         type(max_files) is not int or max_files != 'all'
     ), "You must enter a int from the 1 to the N"
+    
+    for f in os.listdir(path):
+        if "csv" in f:
+            os.remove(path+"/"+f) 
 
-    entries = os.listdir(path)
-    entries = [v.split(".")[0] for v in entries]
+    if os.path.exists(output_path):
+        proc_v = [v.split(".")[0] for v in os.listdir(output_path)]
+        if len(proc_v) > 0:
+            print(f"Already {len(proc_v)} files have been processed")
+        entries = os.listdir(path)
+        entries = [v.split(".")[0] for v in entries if v.split(".")[0] not in proc_v]
+    else:
+        entries = os.listdir(path)
+        entries = [v.split(".")[0] for v in entries]
+
     df = pd.DataFrame(entries)
 
     if max_files == 'all':
@@ -67,6 +79,7 @@ if __name__ == "__main__":
 
     for config_path in args.cfg_files:
         cfg = load_config(args, config_path)
-        create_csv(cfg.DATA.PATH_TO_DATA_DIR, max_files=cfg.MULTIPLE_PROCESS)
+        output_path = os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.MODEL_NAME)
+        create_csv(cfg.DATA.PATH_TO_DATA_DIR, output_path, max_files=cfg.MULTIPLE_PROCESS)
         # change the number inside the range with a parameter from cfg file
         Parallel(n_jobs=cfg.MULTIPLE_PROCESS)(delayed(comprobate_run)(cfg, args, it) for it in range(cfg.MULTIPLE_PROCESS))

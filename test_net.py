@@ -1,8 +1,9 @@
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
+"""
+Extract features for videos using pre-trained arquitectures
 
-# Modified to process a list of videos
-
-"""Extract features for videos using pre-trained networks"""
+ToDo:
+ - Clean this Code and generate a Logging.
+"""
 
 import numpy as np
 import pandas as pd
@@ -23,7 +24,7 @@ from datasets import VideoSet
 from datasets import VideoSetDecord
 from datasets import VideoSetDecord2
 
-logger = logging.get_logger(__name__)
+#logger = logging.get_logger(__name__)
 
 
 def calculate_time_taken(start_time, end_time):
@@ -85,8 +86,17 @@ def perform_inference(test_loader, model, cfg):
         else:
             inputs = inputs.cuda(non_blocking=True)
 
+        print("len")
+        print(len(inputs))
+        print("shape")
+        print(inputs.shape)
+
         # Perform the forward pass.
         preds, feat = model(inputs)
+
+        print("feat")
+        print(feat.shape)
+        ssss
         # Gather all the predictions across all the devices to perform ensemble.
         if cfg.NUM_GPUS > 1:
             preds, feat = du.all_gather([preds, feat])
@@ -120,20 +130,17 @@ def test(cfg):
         print(f"The directory {cfg.MODEL.MODEL_NAME} was created!")
     
     # Setup logging format.
-    logging.setup_logging(output_path)
+    #logging.setup_logging(output_path)
 
     # Print config.
-    logger.info("Test with config:")
-    logger.info(cfg)
+    #logger.info("Test with config:")
+    #logger.info(cfg)
 
     # Build the video model and print model statistics.
     model = build_model(cfg)
 
-    if du.is_master_proc() and cfg.LOG_MODEL_INFO:
-        misc.log_model_info(model, cfg, use_train_input=False)
-    
     cu.load_test_checkpoint(cfg, model)
-
+    
     vid_root = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, cfg.DATA.PATH_PREFIX)
     create_csv(cfg.DATA.PATH_TO_DATA_DIR)
 
@@ -207,9 +214,8 @@ def test(cfg):
 
     end_time = time.time()
     hours, minutes, seconds = calculate_time_taken(start_time, end_time)
+    # add here a loging
     print(
-        "Time taken: {} hour(s), {} minute(s) and {} second(s)".format(
-            hours, minutes, seconds
-        )
+        f"Time taken: {hours} hour(s), {minutes} minute(s) and {seconds} second(s)"
     )
     print("----------------------------------------------------------")

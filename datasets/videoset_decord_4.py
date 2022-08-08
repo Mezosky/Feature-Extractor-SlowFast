@@ -1,4 +1,5 @@
 import os
+import math
 import random
 from io import BytesIO
 import torch
@@ -29,7 +30,7 @@ import slowfast.utils.logging as logging
 decord.bridge.set_bridge('torch')
 
 @DATASET_REGISTRY.register()
-class VideoSetDecord2(torch.utils.data.Dataset):
+class VideoSetDecord4(torch.utils.data.Dataset):
     """
     Construct the untrimmed video loader, then sample
     segments from the videos. The videos are segmented by centering
@@ -69,10 +70,7 @@ class VideoSetDecord2(torch.utils.data.Dataset):
             # Load frames
             vr = VideoReader(path_to_vid, ctx=cpu(0))
             vr = vr.get_batch(range(0, len(vr), self.cfg.DATA.SAMPLING_RATE))
-
-            self.in_fps = 30
-            self.out_fps = 30
-            self.step_size = int(self.in_fps / self.out_fps)
+            self.step_size = 1
 
         except Exception as e:
             logger.info(
@@ -114,14 +112,34 @@ class VideoSetDecord2(torch.utils.data.Dataset):
                     min_scale=min_scale,
                     max_scale=max_scale,
                     crop_size=crop_size,
-                    random_horizontal_flip=self.cfg.DATA.RANDOM_FLIP,
-                    inverse_uniform_sampling=self.cfg.DATA.INV_UNIFORM_SAMPLE,
+                    # random_horizontal_flip=self.cfg.DATA.RANDOM_FLIP,
+                    # inverse_uniform_sampling=self.cfg.DATA.INV_UNIFORM_SAMPLE,
                     #aspect_ratio=relative_aspect,
                     #scale=relative_scales,
                     #motion_shift=False,
                 )
 
-        return frames
+        # generamos una lista con los valores agrupados
+        step_size = 32
+        iterations = math.ceil(frames.shape[1]/step_size)
+
+        CZ, _, HZ, WZ = frames.shape
+   
+        frames_list = []
+        for it in range(iterations):
+            
+            start = it*step_size
+            end   = (it+1)*step_size
+
+            frames_batch = frames[:, start:end, :, :]
+            q_frames = frames_batch.shape[1]
+            if q_frames < step_size:
+                frames_zeros = torch.zeros(CZ, step_size, HZ, WZ)
+                frames_zeros[:, :q_frames, :, :] = frames_batch[:, :q_frames, :, :]
+                frames_batch = frames_zeros.clone()
+            frames_list.append(frames_batch)
+
+        return frames_list
 
     def __getitem__(self, index):
         """
@@ -139,28 +157,7 @@ class VideoSetDecord2(torch.utils.data.Dataset):
                 index of the video replacement that can be decoded.
         """
 
-        frame_seg = torch.zeros(
-            (
-                3,
-                self.out_size,
-                self.cfg.DATA.TEST_CROP_SIZE,
-                self.cfg.DATA.TEST_CROP_SIZE,
-            )
-        ).float()
-
-        start = int(index - self.step_size * self.out_size / 2)
-        end = int(index + self.step_size * self.out_size / 2)
-        max_ind = self.__len__() - 1
-
-        for out_ind, ind in enumerate(range(start, end, self.step_size)):
-            if ind < 0 or ind > max_ind:
-                continue
-            else:
-                frame_seg[:, out_ind, :, :] = self.frames[:, ind, :, :]
-
-        # create the pathways
-        frame_list = pack_pathway_output(self.cfg, frame_seg)
-
+        frame_list = pack_pathway_output(self.cfg, self.frames[index])
         return frame_list
 
     def __len__(self):
@@ -169,4 +166,4 @@ class VideoSetDecord2(torch.utils.data.Dataset):
             (int): the number of frames in the video.
         """
         # return self.video_container.streams.video[0].frames
-        return self.frames.shape[1]
+        return len(self.frames)

@@ -210,6 +210,7 @@ class VideoSetDecord(torch.utils.data.Dataset):
 
         start = int(index - self.step_size * self.out_size / 2)
         end = int(index + self.step_size * self.out_size / 2)
+        
         max_ind = self.__len__() - 1
 
         for out_ind, ind in enumerate(range(start, end, self.step_size)):
