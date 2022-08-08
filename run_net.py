@@ -7,11 +7,7 @@ from slowfast.utils.parser import parse_args
 from configs.custom_config import load_config
 
 #from test_net import test
-<<<<<<< HEAD
-from get_features2 import test
-=======
 from get_features import test
->>>>>>> 3e203894d19df7871be1dd9c06b933771ebc1fbe
 
 def main():
     """
