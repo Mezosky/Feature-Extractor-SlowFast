@@ -29,7 +29,7 @@ class ResNetBasicHead(ResNetBasicHead):
 
         # Get features
         feat = x.clone().detach()
-        #feat = feat.mean(3).mean(2).reshape(feat.shape[0], -1)
+        feat = feat.mean(3).mean(2).reshape(feat.shape[0], -1)
         
         # Perform dropout.
         if hasattr(self, "dropout"):

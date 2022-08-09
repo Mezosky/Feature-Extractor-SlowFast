@@ -120,7 +120,7 @@ class VideoSetDecord4(torch.utils.data.Dataset):
                 )
 
         # generamos una lista con los valores agrupados
-        step_size = 32
+        step_size = self.cfg.DATA.NUM_FRAMES
         iterations = math.ceil(frames.shape[1]/step_size)
 
         CZ, _, HZ, WZ = frames.shape
