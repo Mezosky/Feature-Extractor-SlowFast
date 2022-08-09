@@ -54,7 +54,7 @@ To load weights for Resnet, SlowFast and MViT models, use the following [weights
 ## I3D
 
 ```python
-python run_net.py --cfg "./configs/I3D_8x8_R50.yaml"
+python run_net.py --cfg "./configs/I3D_8x8_R50_ALL.yaml"
 ```
 
 ```python
@@ -66,6 +66,10 @@ python multiple_runs.py --cfg "./configs/I3D_8x8_R50.yaml"
 
 ```python
 python run_net.py --cfg "./configs/SLOWFAST_8x8_R50.yaml"
+```
+
+```python
+python run_net.py --cfg "./configs/SLOWFAST_8x8_R50_ALL.yaml"
 ```
 
 ## X3D

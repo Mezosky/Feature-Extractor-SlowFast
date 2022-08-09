@@ -19,9 +19,9 @@ TEST:
   BATCH_SIZE: 64
   CHECKPOINT_FILE_PATH: "/data/imeza/video_model_checkpoints/x3d_m.pyth"
   NUM_SPATIAL_CROPS: 1
-  NUM_SPATIAL_CROPS: 3
+  #NUM_SPATIAL_CROPS: 3
 DATA:
-  PATH_TO_DATA_DIR: "/data/imeza/charades/Charades_v1_320_240"
+  PATH_TO_DATA_DIR: "/data/imeza/charades/Charades_v1"
   VID_EXT: ".mp4"
   NUM_FRAMES: 16
   SAMPLING_RATE: 5
