@@ -64,7 +64,7 @@ def comprobate_run(cfg, args, parallel_job):
     free_mem = round(info.free/(1024**3), 3)
 
     # Search how to set a not manual treshold
-    if free_mem > 7:
+    if free_mem > 4:
         if cfg.TEST.ENABLE:
             launch_job(cfg=cfg, init_method=args.init_method, func=test)
         print(f"Running process {cfg.ITERATION}")
