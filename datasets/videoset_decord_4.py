@@ -77,7 +77,6 @@ class VideoSetDecord4(torch.utils.data.Dataset):
                 f"Failed to load video from {path_to_vid} with error {e}"
             )
 
-
         min_scale, max_scale, crop_size = (
             [self.cfg.DATA.TEST_CROP_SIZE] * 3
             if self.cfg.TEST.NUM_SPATIAL_CROPS > 1

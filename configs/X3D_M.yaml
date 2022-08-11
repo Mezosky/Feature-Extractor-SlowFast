@@ -24,7 +24,7 @@ DATA:
   PATH_TO_DATA_DIR: "/data/imeza/charades/Charades_v1"
   VID_EXT: ".mp4"
   NUM_FRAMES: 16
-  SAMPLING_RATE: 5
+  SAMPLING_RATE: 1
   TRAIN_JITTER_SCALES: [256, 320]
   TRAIN_CROP_SIZE: 224
   TEST_CROP_SIZE: 224 # use if TEST.NUM_SPATIAL_CROPS: 1
@@ -60,4 +60,4 @@ DATA_LOADER:
 MULTIPLE_PROCESS: 3
 NUM_GPUS: 1
 RNG_SEED: 0
-OUTPUT_DIR: "/data/imeza/charades/Charades_Features"
+OUTPUT_DIR: "/data/imeza/charades/Charades_Features_v2" #"/data/imeza/charades/Charades_Features"
