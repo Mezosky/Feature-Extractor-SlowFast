@@ -95,6 +95,7 @@ class X3DHead(X3DHead):
 
         # Get features
         feat = x.clone().detach()
+        feat = torch.reshape(torch.squeeze(feat), (1, feat.shape[-1]))
 
         # Perform dropout.
         if hasattr(self, "dropout"):

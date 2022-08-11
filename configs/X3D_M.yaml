@@ -16,7 +16,7 @@ X3D:
 TEST:
   ENABLE: True
   DATASET: videoset
-  BATCH_SIZE: 64
+  BATCH_SIZE: 1
   CHECKPOINT_FILE_PATH: "/data/imeza/video_model_checkpoints/x3d_m.pyth"
   NUM_SPATIAL_CROPS: 1
   #NUM_SPATIAL_CROPS: 3
