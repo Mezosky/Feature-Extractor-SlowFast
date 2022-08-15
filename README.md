@@ -99,14 +99,3 @@ charades.py
 ```python
 python charades_test.py --cfg "./configs/MVIT_B_32x3_CONV_ALL.yaml"
 ```
-
-# Questions
-
-- [X] What is the CROP size and JITTER size?.
-- [X] is 320:240 the size of video?. This is because I saw in the yaml of the slowfast different text_crop_size.
-- [X] We may change the frames per second on the videos?
-
-# Blocking
-
-- [ ] I don't know what is `_spatial_temporal_idx`, this variable is associated with the framerate of the video but at the same time is related with the label and video's index.
-

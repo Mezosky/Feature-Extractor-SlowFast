@@ -25,7 +25,7 @@ import slowfast.utils.logging as logging
 
 
 
-#logger = logging.get_logger(__name__)
+logger = logging.get_logger(__name__)
 # Set how default a torch tensor
 decord.bridge.set_bridge('torch')
 
@@ -68,15 +68,15 @@ class VideoSetDecord4(torch.utils.data.Dataset):
         try:
             # set the step size, the input and output
             # Load frames
-            vr = VideoReader(path_to_vid, ctx=cpu(0))
-            vr = vr.get_batch(range(0, len(vr), self.cfg.DATA.SAMPLING_RATE))
+            frames = VideoReader(path_to_vid, ctx=cpu(0))
+            frames = frames.get_batch(range(0, len(frames), self.cfg.DATA.SAMPLING_RATE))
             self.step_size = 1
 
         except Exception as e:
             logger.info(
                 f"Failed to load video from {path_to_vid} with error {e}"
             )
-
+        
         min_scale, max_scale, crop_size = (
             [self.cfg.DATA.TEST_CROP_SIZE] * 3
             if self.cfg.TEST.NUM_SPATIAL_CROPS > 1
@@ -84,38 +84,18 @@ class VideoSetDecord4(torch.utils.data.Dataset):
             + [self.cfg.DATA.TEST_CROP_SIZE]
         )
         
-        frames = vr.clone()
-        frames = frames.float()
-        frames = frames / 255.0
-
         frames = tensor_normalize(
             frames, self.cfg.DATA.MEAN, self.cfg.DATA.STD
         )
-
+        
         # T H W C -> C T H W.
         frames = frames.permute(3, 0, 1, 2)
-
-        scl, asp = (
-            self.cfg.DATA.TRAIN_JITTER_SCALES_RELATIVE,
-            self.cfg.DATA.TRAIN_JITTER_ASPECT_RELATIVE,
-        )
-        relative_scales = (
-            scl
-        )
-        relative_aspect = (
-            asp
-        )
 
         frames = spatial_sampling(
                     frames,
                     min_scale=min_scale,
                     max_scale=max_scale,
                     crop_size=crop_size,
-                    # random_horizontal_flip=self.cfg.DATA.RANDOM_FLIP,
-                    # inverse_uniform_sampling=self.cfg.DATA.INV_UNIFORM_SAMPLE,
-                    #aspect_ratio=relative_aspect,
-                    #scale=relative_scales,
-                    #motion_shift=False,
                 )
 
         # generamos una lista con los valores agrupados

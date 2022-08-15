@@ -9,9 +9,11 @@ from slowfast.utils.misc import launch_job
 from slowfast.utils.parser import parse_args
 from configs.custom_config import load_config
 
-from get_features import test
+from get_features2 import test
 
 def create_csv(path, output_path,max_files='all'):
+    """Create a csv file to process the videos"""
+
     assert (
         type(max_files) is not int or max_files != 'all'
     ), "You must enter a int from the 1 to the N"
@@ -56,7 +58,6 @@ def comprobate_run(cfg, args, parallel_job):
     cfg.ITERATION = parallel_job + 1
 
     nvidia_smi.nvmlInit()
-    # I don't know why the index has another number
     handle = nvidia_smi.nvmlDeviceGetHandleByIndex(1)
     info = nvidia_smi.nvmlDeviceGetMemoryInfo(handle)
 
@@ -64,7 +65,7 @@ def comprobate_run(cfg, args, parallel_job):
     free_mem = round(info.free/(1024**3), 3)
 
     # Search how to set a not manual treshold
-    if free_mem > 4:
+    if free_mem > 2:
         if cfg.TEST.ENABLE:
             launch_job(cfg=cfg, init_method=args.init_method, func=test)
         print(f"Running process {cfg.ITERATION}")

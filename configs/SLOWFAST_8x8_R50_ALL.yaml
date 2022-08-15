@@ -7,7 +7,7 @@ DATA:
   PATH_TO_DATA_DIR: "/data/imeza/charades/Charades_v1"
   PATH_PREFIX: ""
   NUM_FRAMES: 8
-  SAMPLING_RATE: 2
+  SAMPLING_RATE: 1
   TRAIN_JITTER_SCALES: [256, 320]
   TRAIN_CROP_SIZE: 224
   TEST_CROP_SIZE: 256
@@ -61,4 +61,4 @@ DETECTION:
 NUM_GPUS: 1
 NUM_SHARDS: 1
 RNG_SEED: 0
-OUTPUT_DIR: "/data/imeza/charades/Charades_Features"
+OUTPUT_DIR: "/data/imeza/charades/Charades_Features_v2"
