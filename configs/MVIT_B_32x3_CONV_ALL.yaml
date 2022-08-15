@@ -8,7 +8,7 @@ TRAIN:
   CHECKPOINT_PERIOD: 10
   AUTO_RESUME: True
 DATA:
-  PATH_TO_DATA_DIR: "/data/imeza/charades/Charades_v1" #"/data/imeza/charades/Charades_v1_320_240"
+  PATH_TO_DATA_DIR: "/data/imeza/charades/Charades_v2_320_240/" #"/data/imeza/charades/Charades_v1_320_240"
   VID_EXT: ".mp4"
   PATH_PREFIX: ""
   USE_OFFSET_SAMPLING: True
@@ -92,4 +92,4 @@ MULTIPLE_PROCESS: 8
 NUM_GPUS: 1
 NUM_SHARDS: 1
 RNG_SEED: 0
-OUTPUT_DIR: "/data/imeza/charades/Charades_Features"
+OUTPUT_DIR: "/data/imeza/charades/Charades_Features_v2"

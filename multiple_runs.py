@@ -52,7 +52,7 @@ def create_csv(path, output_path,max_files='all'):
 
 def comprobate_run(cfg, args, parallel_job):
 
-    torch.cuda.set_device(0)
+    torch.cuda.set_device(1)
     print('Device GPU: ', torch.cuda.current_device())
 
     cfg.ITERATION = parallel_job + 1

@@ -47,7 +47,7 @@ To load weights for Resnet, SlowFast and MViT models, use the following [weights
     - [X] Add a fps reader to the inputs videos
 - [X] Check the output feat for each model.
 - [X] Create a new csv in each run. each run have to detect if we have the file npy processed.
-- [ ] Create a JSON file with info about the videos processed.
+- [X] Create a JSON file with info about the videos processed.
 
 # How to run
 
