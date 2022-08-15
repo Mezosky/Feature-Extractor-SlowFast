@@ -6,7 +6,6 @@ from slowfast.utils.misc import launch_job
 from slowfast.utils.parser import parse_args
 from configs.custom_config import load_config
 
-#from test_net import test
 from get_features2 import test
 
 def main():
