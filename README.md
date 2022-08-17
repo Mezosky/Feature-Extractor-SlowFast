@@ -63,6 +63,3 @@ charades.py
 ```python
 python charades_test.py --cfg "./configs/MVIT_B_32x3_CONV_ALL.yaml"
 ```
-
-# TO-DO
-
