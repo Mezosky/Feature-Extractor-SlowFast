@@ -6,7 +6,7 @@ from slowfast.utils.misc import launch_job
 from slowfast.utils.parser import parse_args
 from configs.custom_config import load_config
 
-from get_features2 import test
+from get_features import test
 
 def main():
     """
@@ -28,7 +28,6 @@ def main():
         cfg = load_config(args, path_to_config)
         
         # Select GPU
-        # TODO: select gpu from the cfg file
         torch.cuda.set_device(1)
         print('Device GPU: ', torch.cuda.current_device())
         

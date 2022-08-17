@@ -9,7 +9,7 @@ from slowfast.utils.misc import launch_job
 from slowfast.utils.parser import parse_args
 from configs.custom_config import load_config
 
-from get_features2 import test
+from get_features import test
 
 def create_csv(path, output_path,max_files='all'):
     """Create a csv file to process the videos"""

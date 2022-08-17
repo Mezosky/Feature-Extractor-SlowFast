@@ -2,11 +2,12 @@
 Extract features for videos using pre-trained arquitectures
 
 ToDo:
- - Clean this Code and generate a Logging.
+ - Clean this Code and create a Logging.
 """
 
 import numpy as np
 import pandas as pd
+import logging
 import torch
 import os
 import time
@@ -22,6 +23,11 @@ from models import build_model
 from datasets import VideoSet
 from datasets import VideoSetDecord
 from datasets import VideoSetDecord2
+from datasets import VideoSetDecord3
+from datasets import VideoSetDecord4
+
+# Logger
+log = logging.getLogger(__name__)
 
 def calculate_time_taken(start_time, end_time):
     hours = int((end_time - start_time) / 3600)
@@ -77,7 +83,6 @@ def perform_inference(test_loader, model, cfg):
     model.eval()
 
     feat_arr = None
-
     for inputs in tqdm(test_loader):
         # Transfer the data to the current GPU device.
         if isinstance(inputs, (list,)):
@@ -88,6 +93,11 @@ def perform_inference(test_loader, model, cfg):
 
         # Perform the forward pass.
         preds, feat = model(inputs)
+
+
+        # Perform the forward pass.
+        preds, feat = model(inputs)
+
         # Gather all the predictions across all the devices to perform ensemble.
         if cfg.NUM_GPUS > 1:
             preds, feat = du.all_gather([preds, feat])
@@ -99,6 +109,7 @@ def perform_inference(test_loader, model, cfg):
         else:
             feat_arr = np.concatenate((feat_arr, feat), axis=0)
 
+    print(feat_arr.shape)
     return feat_arr
 
 
@@ -122,7 +133,6 @@ def test(cfg):
     
     # Build the video model and print model statistics.
     model = build_model(cfg)
-    
     cu.load_test_checkpoint(cfg, model)
 
     vid_root = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, cfg.DATA.PATH_PREFIX)
@@ -137,9 +147,10 @@ def test(cfg):
     print("Loading Video List...")
     with open(videos_list_file) as f:
         videos = sorted([x.strip() for x in f.readlines() if len(x.strip()) > 0])
+    
     print("#----------------------------------------------------------#")
-
-    print("{} videos to be processed...".format(len(videos)))
+    log.info(f"{len(videos)} videos to be processed...")
+    print(f"{len(videos)} videos to be processed...")
     print("#----------------------------------------------------------#")
     
     rejected_vids = []
@@ -153,13 +164,13 @@ def test(cfg):
         out_path = os.path.join(output_path, os.path.split(vid)[0])
         out_file = vid_id.split(".")[0] + ".npy"
 
-        print("{}. Processing {}...".format(vid_no + 1, vid))
+        print(f"{vid_no + 1}.- Processing {vid}...")
         try:
-            dataset = VideoSetDecord2(
-                cfg, path_to_vid, vid_id, #read_vid_file=True
-                )
+            dataset = VideoSetDecord4(cfg, path_to_vid, vid_id)
+            log.info(f"{vid_no + 1}.- Video {vid} Processed.")
         except Exception as e:
             print(f"{vid_no + 1}. {vid} cannot be read with error {e}")
+            log.warning(f"{vid_no + 1}.- Video {vid} cannot be read with error {e}.")
             print("#----------------------------------------------------------#")
             rejected_vids.append(vid)
             continue
@@ -173,10 +184,9 @@ def test(cfg):
             pin_memory=cfg.DATA_LOADER.PIN_MEMORY,
             drop_last=False,
         )
-
+        
         # Perform multi-view test on the entire dataset.
         feat_arr = perform_inference(test_loader, model, cfg)
-
         os.makedirs(out_path, exist_ok=True)
         print(out_path)
         np.save(os.path.join(out_path, out_file), feat_arr)
@@ -189,7 +199,10 @@ def test(cfg):
 
     end_time = time.time()
     hours, minutes, seconds = calculate_time_taken(start_time, end_time)
+    log.info(f"Processed {len(videos)} videos with the model {cfg.MODEL.MODEL_NAME}, \
+    it took a time of: {hours} hour(s), {minutes} minute(s) and {seconds} second(s)")
     print(
-        f"Time taken: {hours} hour(s), {minutes} minute(s) and {seconds} second(s)"
+        f"Processed {len(videos)} videos with the model {cfg.MODEL.MODEL_NAME}, \
+        it took a time of: {hours} hour(s), {minutes} minute(s) and {seconds} second(s)"
     )
     print("#----------------------------------------------------------#")

@@ -133,6 +133,7 @@ checkpoints/*
 videos_input/*
 features_output/*
 notebooks/*
+others/*
 
 # python files
 get_features.py
