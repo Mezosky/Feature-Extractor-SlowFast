@@ -1,8 +1,6 @@
 """
 Extract features for videos using pre-trained arquitectures
 
-ToDo:
- - Clean this Code and create a Logging.
 """
 
 import numpy as np
@@ -13,17 +11,12 @@ import os
 import time
 import av
 from tqdm import tqdm
-from moviepy.video.io.VideoFileClip import VideoFileClip
 
 import slowfast.utils.checkpoint as cu
 import slowfast.utils.distributed as du
 import slowfast.utils.misc as misc
 
 from models import build_model
-from datasets import VideoSet
-from datasets import VideoSetDecord
-from datasets import VideoSetDecord2
-from datasets import VideoSetDecord3
 from datasets import VideoSetDecord4
 
 # Logger
