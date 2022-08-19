@@ -31,8 +31,8 @@ def get_annotations(path1,
 
     model_name = path2.split("/")[-1]
 
-    new_json = []
     for it, ann_file in enumerate(list_annotations_files):
+        new_json = []
         for e_file in tqdm(ann_file):
             fps = metadata_video[e_file['video']]['fps']
             frames = int(metadata_video[e_file['video']]['frames'])
