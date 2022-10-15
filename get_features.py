@@ -18,6 +18,7 @@ import slowfast.utils.misc as misc
 
 from models import build_model
 from datasets import VideoSetDecord4
+from datasets import VideoSetDecord5
 
 # Logger
 log = logging.getLogger(__name__)
@@ -87,10 +88,6 @@ def perform_inference(test_loader, model, cfg):
         # Perform the forward pass.
         preds, feat = model(inputs)
 
-
-        # Perform the forward pass.
-        preds, feat = model(inputs)
-
         # Gather all the predictions across all the devices to perform ensemble.
         if cfg.NUM_GPUS > 1:
             preds, feat = du.all_gather([preds, feat])
@@ -101,8 +98,6 @@ def perform_inference(test_loader, model, cfg):
             feat_arr = feat
         else:
             feat_arr = np.concatenate((feat_arr, feat), axis=0)
-
-    print(feat_arr.shape)
     return feat_arr
 
 
@@ -119,7 +114,11 @@ def test(cfg):
     torch.manual_seed(cfg.RNG_SEED)
 
     # Comprobate and/or create ouput folder.
-    output_path = os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.MODEL_NAME)
+    try:
+        folder_feature_name = cfg.TRAIN.CHECKPOINT_FILE_PATH.split("/")[-1].split(".")[0]
+    except:
+        folder_feature_name = cfg.MODEL.ARCH
+    output_path = os.path.join(cfg.OUTPUT_DIR, folder_feature_name)
     if not os.path.exists(output_path):
         os.mkdir(output_path)
         print(f"The directory {cfg.MODEL.MODEL_NAME} was created!")
@@ -131,11 +130,11 @@ def test(cfg):
     vid_root = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, cfg.DATA.PATH_PREFIX)
 
     # Check if the video list are all the videos or just a part of the list.
-    if cfg.ITERATION == None:
+    if cfg.NUMBER_CSV == None:
         create_csv(cfg.DATA.PATH_TO_DATA_DIR, output_path)
         videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, "videos_list.csv")
     else:
-        videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, f"videos_list_{cfg.ITERATION}.csv")
+        videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, f"videos_list_{cfg.NUMBER_CSV}.csv")
 
     print("Loading Video List...")
     with open(videos_list_file) as f:
@@ -159,7 +158,7 @@ def test(cfg):
 
         print(f"{vid_no + 1}.- Processing {vid}...")
         try:
-            dataset = VideoSetDecord4(cfg, path_to_vid, vid_id)
+            dataset = VideoSetDecord5(cfg, path_to_vid, vid_id)
             log.info(f"{vid_no + 1}.- Video {vid} Processed.")
         except Exception as e:
             print(f"{vid_no + 1}. {vid} cannot be read with error {e}")
