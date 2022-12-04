@@ -20,6 +20,8 @@ from models import build_model
 from datasets import VideoSetDecord4
 from datasets import VideoSetDecord5
 
+import ipdb
+
 # Logger
 log = logging.getLogger(__name__)
 
@@ -146,6 +148,7 @@ def test(cfg):
     print("#----------------------------------------------------------#")
     
     rejected_vids = []
+    metadata_json_file = {}
     start_time = time.time()
     for vid_no, vid in enumerate(videos):
 
@@ -180,15 +183,23 @@ def test(cfg):
         
         # Perform multi-view test on the entire dataset.
         feat_arr = perform_inference(test_loader, model, cfg)
+        ipdb.set_trace()
         os.makedirs(out_path, exist_ok=True)
         print(out_path)
         np.save(os.path.join(out_path, out_file), feat_arr)
-        del dataset
-        del test_loader
+        dataset = None
+        test_loader = None
         print("#----------------------------------------------------------#")
 
     
     print("Rejected Videos: {}".format(rejected_vids))
+    
+
+    os.path.join(out_path_metadata, 'metadata_videos.json')
+    with open(out_path_metadata+'/metadata_videos.json', 'w') as f:
+        json.dump(json_file, f, indent=2)
+        print("New json file was created")
+
 
     end_time = time.time()
     hours, minutes, seconds = calculate_time_taken(start_time, end_time)

@@ -157,7 +157,12 @@ class VideoSetDecord5(torch.utils.data.Dataset):
         # Define the large of the batch of frames
         self.frames_batch = self.q_frames if self.q_frames < 3200 else 3200
         # you get a tuple containing the indexes and frames
-        self.idx_video_tuples = self._gen_range_idx_frame(0, self.q_frames, self.frames_batch, self.out_size)
+        self.idx_video_tuples = self._gen_range_idx_frame(
+            0, 
+            self.q_frames, 
+            self.frames_batch, 
+            self.out_size
+        )
 
     def __getitem__(self, index):
         """
