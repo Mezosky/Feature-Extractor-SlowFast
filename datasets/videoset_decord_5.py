@@ -155,7 +155,7 @@ class VideoSetDecord5(torch.utils.data.Dataset):
         # in the bath of frames.
         self.tuple_idx_frame = ([], None)
         # Define the large of the batch of frames
-        self.frames_batch = self.q_frames if self.q_frames < 3200 else 3200
+        self.frames_batch = self.q_frames if self.q_frames < 1800 else 1800
         # you get a tuple containing the indexes and frames
         self.idx_video_tuples = self._gen_range_idx_frame(
             0, 
@@ -206,12 +206,12 @@ class VideoSetDecord5(torch.utils.data.Dataset):
                 # get the output frame
                 i = index - np.array(index_list).min()
                 s, e = int(i*self.out_size), int((i+1)*self.out_size)
-                #output_frames = frames[:, s:e, ...]
+                output_frames = frames[:, s:e, ...]
 
             except AssertionError as error:
                 print(error)
 
-        return pack_pathway_output(self.cfg, frames[:, s:e, ...])
+        return pack_pathway_output(self.cfg, output_frames)
 
     def __len__(self):
         """

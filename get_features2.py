@@ -183,9 +183,13 @@ def test(cfg):
         
         # Perform multi-view test on the entire dataset.
         feat_arr = perform_inference(test_loader, model, cfg)
-        ipdb.set_trace()
         os.makedirs(out_path, exist_ok=True)
-        print(out_path)
+        
+        metadata_json_file[vid] = \
+            {"fps":25, 
+            "duration":cfg.DATA.NUM_FRAMES*feat_arr.shape[0]/25, 
+            "frames":cfg.DATA.NUM_FRAMES*feat_arr.shape[0]}
+        
         np.save(os.path.join(out_path, out_file), feat_arr)
         dataset = None
         test_loader = None
@@ -197,8 +201,8 @@ def test(cfg):
 
     os.path.join(out_path_metadata, 'metadata_videos.json')
     with open(out_path_metadata+'/metadata_videos.json', 'w') as f:
-        json.dump(json_file, f, indent=2)
-        print("New json file was created")
+        json.dump(metadata_json_file, f, indent=2)
+        print("New json file was created to save the metadata.")
 
 
     end_time = time.time()
