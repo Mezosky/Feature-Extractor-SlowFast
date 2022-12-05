@@ -8,6 +8,8 @@ from configs.custom_config import load_config
 
 from get_features import test
 
+import ipdb
+
 def main():
     """
     Main function to process the videos.
@@ -28,7 +30,7 @@ def main():
         cfg = load_config(args, path_to_config)
         
         # Select GPU
-        torch.cuda.set_device(1)
+        torch.cuda.set_device(0)
         print('Device GPU: ', torch.cuda.current_device())
         
         # Check if the cfg file is for test

@@ -26,6 +26,12 @@ defcfg._C.MULTIPLE_PROCESS = 3
 # Number of iteration
 defcfg._C.ITERATION = None
 
+# Number of iteration
+defcfg._C.NUMBER_CSV = None
+
+# Put the loader for long or short videos.
+defcfg._C.LOAD_SHORT_VIDEOS = False
+
 def get_cfg():
     """
     Get a copy of the default config.

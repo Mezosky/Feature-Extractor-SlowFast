@@ -64,7 +64,6 @@ class VideoSetDecord4(torch.utils.data.Dataset):
         )
         assert os.path.exists(path_to_vid), "{} file not found".format(path_to_vid)
 
-
         try:
             # set the step size, the input and output
             # Load frames
