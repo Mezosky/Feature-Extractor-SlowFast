@@ -17,11 +17,7 @@ import slowfast.utils.distributed as du
 import slowfast.utils.misc as misc
 
 from models import build_model
-<<<<<<< HEAD
-#from datasets import VideoSetDecord4
-=======
 from datasets import VideoSetDecord4
->>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2
 from datasets import VideoSetDecord5
 
 import ipdb
@@ -141,10 +137,7 @@ def test(cfg):
         videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, "videos_list.csv")
     else:
         videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, f"videos_list_{cfg.NUMBER_CSV}.csv")
-<<<<<<< HEAD
-=======
 
->>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2
     print("Loading Video List...")
     with open(videos_list_file) as f:
         videos = sorted([x.strip() for x in f.readlines() if len(x.strip()) > 0])
@@ -155,6 +148,7 @@ def test(cfg):
     print("#----------------------------------------------------------#")
     
     rejected_vids = []
+    metadata_json_file = {}
     start_time = time.time()
     for vid_no, vid in enumerate(videos):
 
@@ -189,16 +183,27 @@ def test(cfg):
         
         # Perform multi-view test on the entire dataset.
         feat_arr = perform_inference(test_loader, model, cfg)
-        ipdb.set_trace()
         os.makedirs(out_path, exist_ok=True)
-        print(out_path)
+        
+        metadata_json_file[vid] = \
+            {"fps":25, 
+            "duration":cfg.DATA.NUM_FRAMES*feat_arr.shape[0]/25, 
+            "frames":cfg.DATA.NUM_FRAMES*feat_arr.shape[0]}
+        
         np.save(os.path.join(out_path, out_file), feat_arr)
-        del dataset
-        del test_loader
+        dataset = None
+        test_loader = None
         print("#----------------------------------------------------------#")
 
     
     print("Rejected Videos: {}".format(rejected_vids))
+    
+
+    os.path.join(out_path_metadata, 'metadata_videos.json')
+    with open(out_path_metadata+'/metadata_videos.json', 'w') as f:
+        json.dump(metadata_json_file, f, indent=2)
+        print("New json file was created to save the metadata.")
+
 
     end_time = time.time()
     hours, minutes, seconds = calculate_time_taken(start_time, end_time)

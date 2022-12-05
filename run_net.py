@@ -6,7 +6,8 @@ from slowfast.utils.misc import launch_job
 from slowfast.utils.parser import parse_args
 from configs.custom_config import load_config
 
-from get_features import test
+#from get_features import test
+from get_features2 import test
 
 import ipdb
 
@@ -38,7 +39,7 @@ def main():
             launch_job(cfg=cfg, init_method=args.init_method, func=test)
         else:
             raise Exception("This function can only get features, classification \
-            is not implemented. Please change TEST.ENABLE to True.")
+            is not implemented. Please change TEST.ENABLE to True in the .yaml file.")
 
 if __name__ == "__main__":
     main()
