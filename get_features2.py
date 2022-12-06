@@ -198,7 +198,7 @@ def test(cfg):
     
     print("Rejected Videos: {}".format(rejected_vids))
     
-
+    os.makedirs(out_path_metadata, exist_ok=True)
     os.path.join(out_path_metadata, 'metadata_videos.json')
     with open(out_path_metadata+'/metadata_videos.json', 'w') as f:
         json.dump(metadata_json_file, f, indent=2)
