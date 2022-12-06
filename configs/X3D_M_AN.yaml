@@ -1,7 +1,7 @@
 TRAIN:
-  ENABLE: False
+  ENABLE: False # default True
   DATASET: videoset
-  CHECKPOINT_FILE_PATH: "/data/imeza/video_model_checkpoints/x3d_s.pyth"
+  CHECKPOINT_FILE_PATH: "/data/imeza/video_model_checkpoints/x3d_m.pyth"
   CHECKPOINT_TYPE: model_state
   BATCH_SIZE: 128
   EVAL_PERIOD: 10
@@ -17,18 +17,18 @@ TEST:
   ENABLE: True
   DATASET: videoset
   BATCH_SIZE: 1
-  # CHECKPOINT_FILE_PATH: 'x3d_s.pyth' # 73.50% top1 30-view accuracy to download from the model zoo (optional).
-  # NUM_SPATIAL_CROPS: 1
-  NUM_SPATIAL_CROPS: 3
+  CHECKPOINT_FILE_PATH: "/data/imeza/video_model_checkpoints/x3d_m.pyth"
+  NUM_SPATIAL_CROPS: 1
+  #NUM_SPATIAL_CROPS: 3
 DATA:
   PATH_TO_DATA_DIR: "/data/imeza/charades/Charades_v2_320_240/"
   VID_EXT: ".mp4"
-  NUM_FRAMES: 13
+  NUM_FRAMES: 16
   SAMPLING_RATE: 1
-  TRAIN_JITTER_SCALES: [182, 228]
-  TRAIN_CROP_SIZE: 160
-  # TEST_CROP_SIZE: 160 # use if TEST.NUM_SPATIAL_CROPS: 1
-  TEST_CROP_SIZE: 182 # use if TEST.NUM_SPATIAL_CROPS: 3
+  TRAIN_JITTER_SCALES: [256, 320]
+  TRAIN_CROP_SIZE: 224
+  TEST_CROP_SIZE: 224 # use if TEST.NUM_SPATIAL_CROPS: 1
+  #TEST_CROP_SIZE: 256 # use if TEST.NUM_SPATIAL_CROPS: 3
   INPUT_CHANNEL_NUM: [3]
   DECODING_BACKEND: torchvision
 RESNET:
@@ -40,7 +40,7 @@ BN:
   NUM_BATCHES_PRECISE: 200
   WEIGHT_DECAY: 0.0
 SOLVER:
-  BASE_LR: 0.1 # 16 machine
+  BASE_LR: 0.1 # 1 machine
   BASE_LR_SCALE_NUM_SHARDS: True
   LR_POLICY: cosine
   MAX_EPOCH: 300
@@ -57,8 +57,7 @@ MODEL:
 DATA_LOADER:
   NUM_WORKERS: 0
   PIN_MEMORY: True
+MULTIPLE_PROCESS: 3
 NUM_GPUS: 1
-MULTIPLE_PROCESS: 5
-OUTPUT_DIR: "/data/imeza/charades/Charades_Features_v2"
 RNG_SEED: 0
-NUMBER_CSV: 1
+OUTPUT_DIR: "/data/imeza/charades/Charades_Features_v2" #"/data/imeza/charades/Charades_Features"
