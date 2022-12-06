@@ -55,6 +55,11 @@ python multiple_runs.py --cfg "./configs/I3D_8x8_R50.yaml"
 ```python
 python run_net.py --cfg "./configs/SLOW_8x8_R50.yaml"
 ```
+
+```python
+python run_net.py --cfg "./configs/SLOW_8x8_R50_AN.yaml"
+```
+
 1321mb
 
 ## SlowFast
