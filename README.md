@@ -122,7 +122,12 @@ charades.py
 python charades_test.py --cfg "./configs/MVIT_B_32x3_CONV_ALL.yaml"
 ```
 
+<<<<<<< HEAD
+
+scp -P 202 31minutos.mp4 imeza@gate.dcc.uchile.cl:/data/imeza/ActivityNet/ActivityNet-apophis/2019/ActivityNetVideoData/v1-3/trial
+=======
 scp -P 202 31minutos.mp4 imeza@gate.dcc.uchile.cl:/data/imeza/ActivityNet/ActivityNet-apophis/2019/ActivityNetVideoData/v1-3/trial
 
 Caso a comprobar
 v_j7Tk8I_DCtw
+>>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2

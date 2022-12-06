@@ -17,7 +17,11 @@ import slowfast.utils.distributed as du
 import slowfast.utils.misc as misc
 
 from models import build_model
+<<<<<<< HEAD
+#from datasets import VideoSetDecord4
+=======
 from datasets import VideoSetDecord4
+>>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2
 from datasets import VideoSetDecord5
 
 import ipdb
@@ -137,7 +141,10 @@ def test(cfg):
         videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, "videos_list.csv")
     else:
         videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, f"videos_list_{cfg.NUMBER_CSV}.csv")
+<<<<<<< HEAD
+=======
 
+>>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2
     print("Loading Video List...")
     with open(videos_list_file) as f:
         videos = sorted([x.strip() for x in f.readlines() if len(x.strip()) > 0])
