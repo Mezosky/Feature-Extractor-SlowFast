@@ -1,10 +1,7 @@
 import os
 import math
-import random
-<<<<<<< HEAD
-=======
+dimport random
 import time
->>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2
 from io import BytesIO
 import torch
 import torch.utils.data
@@ -153,20 +150,11 @@ class VideoSetDecord5(torch.utils.data.Dataset):
 
     def _get_frames_long_video(self):
         self.q_frames = len(self._check_video())
-<<<<<<< HEAD
-        print(self.q_frames)
-=======
->>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2
         # we define a tuple where we'll store the index and bath of frames
         # The first postion is a list where we'll store the indexes contained
         # in the bath of frames.
         self.tuple_idx_frame = ([], None)
         # Define the large of the batch of frames
-<<<<<<< HEAD
-        self.frames_batch = self.q_frames if self.q_frames < 96 else 96
-        # you get a tuple containing the indexes and frames
-        self.idx_video_tuples = self._gen_range_idx_frame(0, self.q_frames, self.frames_batch, self.out_size)
-=======
         self.frames_batch = self.q_frames if self.q_frames < 1800 else 1800
         # you get a tuple containing the indexes and frames
         self.idx_video_tuples = self._gen_range_idx_frame(
@@ -175,7 +163,6 @@ class VideoSetDecord5(torch.utils.data.Dataset):
             self.frames_batch, 
             self.out_size
         )
->>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2
 
     def __getitem__(self, index):
         """
@@ -194,12 +181,7 @@ class VideoSetDecord5(torch.utils.data.Dataset):
         """
 
         if self.cfg.LOAD_SHORT_VIDEOS:
-<<<<<<< HEAD
-            frame_list = pack_pathway_output(self.cfg, self.frames[index])
-            return frame_list
-=======
             return pack_pathway_output(self.cfg, self.frames[index])
->>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2
         
         ############## long videos ###########
         if index in self.tuple_idx_frame[0]:
@@ -217,12 +199,7 @@ class VideoSetDecord5(torch.utils.data.Dataset):
                 start_end_tuple = self.idx_video_tuples[idx_tuple][1]
                 vr = VideoReader(self.path_to_vid, ctx=cpu(0))
                 frames = vr.get_batch(range(start_end_tuple[0], start_end_tuple[1], 1))
-<<<<<<< HEAD
-                frames = self._transform_frames(frames) # prueba
-
-=======
                 frames = self._transform_frames(frames)
->>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2
                 # save in a "cache" the loaded segment
                 self.tuple_idx_frame = (index_list, frames)
 
@@ -230,12 +207,6 @@ class VideoSetDecord5(torch.utils.data.Dataset):
                 i = index - np.array(index_list).min()
                 s, e = int(i*self.out_size), int((i+1)*self.out_size)
                 output_frames = frames[:, s:e, ...]
-<<<<<<< HEAD
-                #output_frames = frames[s:e, ...]
-                #output_frames = self._transform_frames(output_frames)
-=======
-
->>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2
             except AssertionError as error:
                 print(error)
 
