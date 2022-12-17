@@ -1,6 +1,6 @@
 import os
 import math
-dimport random
+import random
 import time
 from io import BytesIO
 import torch
@@ -35,7 +35,7 @@ class VideoSetDecord5(torch.utils.data.Dataset):
     """
     Construct the untrimmed video loader, then sample
     segments from the videos. The videos are segmented by centering
-    each frame as per the output size i.e. cfg.DATA.NUM_FRAMES.
+    each frame as per the output size i.e. cfg.DATA.NUM_FRAMES.d
     """
 
     def __init__(self, cfg, vid_path, vid_id):
