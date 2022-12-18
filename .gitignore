@@ -134,9 +134,12 @@ videos_input/*
 features_output/*
 notebooks/*
 others/*
+mlruns/
 
 # python files
 get_features.py
 test_logging.py
 test_net.py
 test_video.py
+multiple_runs.py
+
