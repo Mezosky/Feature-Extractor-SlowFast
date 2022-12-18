@@ -69,8 +69,8 @@ DATA_LOADER:
   NUM_WORKERS: 0
   PIN_MEMORY: True
 NUM_GPUS: 1
-MULTIPLE_PROCESS: 5
-OUTPUT_DIR: "/data/imeza/charades/Charades_Features_v2"
 NUM_SHARDS: 1
-RNG_SEED: 0
 LOG_MODEL_INFO: False
+OUTPUT_DIR: "/data/imeza/charades/Charades_Features_v2"
+RNG_SEED: 0
+NUMBER_CSV: 1

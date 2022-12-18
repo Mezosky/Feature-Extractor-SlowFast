@@ -59,5 +59,6 @@ DATA_LOADER:
   PIN_MEMORY: True
 MULTIPLE_PROCESS: 3
 NUM_GPUS: 1
+OUTPUT_DIR: "/data/imeza/charades/Charades_Features_v2"
 RNG_SEED: 0
-OUTPUT_DIR: "/data/imeza/charades/Charades_Features_v2" #"/data/imeza/charades/Charades_Features"
+NUMBER_CSV: 1

@@ -1,7 +1,7 @@
 TRAIN:
   ENABLE: False
   DATASET: videoset
-  CHECKPOINT_FILE_PATH: "/data/imeza/video_model_checkpoints/I3D_8x8_R50.pkl"
+  CHECKPOINT_FILE_PATH: "/data/imeza/video_model_checkpoints/SLOWONLY_8x8_R50.pkl"
   CHECKPOINT_TYPE: caffe2
   BATCH_SIZE: 64
   EVAL_PERIOD: 10
@@ -27,7 +27,7 @@ RESNET:
 NONLOCAL:
   LOCATION: [[[]], [[]], [[]], [[]]]
   GROUP: [[1], [1], [1], [1]]
-  INSTANTIATION: softmax
+  INSTANTIATION: dot_product
 BN:
   USE_PRECISE_STATS: True
   NUM_BATCHES_PRECISE: 200
@@ -42,7 +42,7 @@ SOLVER:
   OPTIMIZING_METHOD: sgd
 MODEL:
   NUM_CLASSES: 400
-  ARCH: i3d
+  ARCH: slow
   MODEL_NAME: ResNet
   LOSS_FUNC: cross_entropy
   DROPOUT_RATE: 0.5
@@ -54,7 +54,6 @@ DATA_LOADER:
   NUM_WORKERS: 0
   PIN_MEMORY: True
 NUM_GPUS: 1
-MULTIPLE_PROCESS: 5
 OUTPUT_DIR: "/data/imeza/charades/Charades_Features_v2"
-NUM_SHARDS: 1
 RNG_SEED: 0
+NUMBER_CSV: 1
