@@ -1,4 +1,4 @@
-# 🎥 Features Extractor SlowFast 🎥
+# 🎥 Features Extractor pySlowFast 🎥
 
 The following code has as main objective to obtain features using the [PySlowFast](https://github.com/facebookresearch/SlowFast) meta library. The code provided here is focused only on obtaining features, for this reason it is not possible to obtain inference in a native way in its execution.
 
@@ -6,7 +6,7 @@ The logic used for the extraction of features is generating an output prior to t
 
 <img src="https://www.mdpi.com/sustainability/sustainability-14-03275/article_deploy/html/images/sustainability-14-03275-g002.png" alt="drawing" width="300" class="center"/>
 
-> Please if you want to use the code read the "installation" and "How to use" section. For the execution of the script it is necessary to set/define in the configuration file some relevant inputs for each model.
+> If you want to use the code read the "installation" and "How to use" section. For the execution of the script it is necessary to set/define in the configuration file some relevant inputs for each model.
 
 # Installation
 
