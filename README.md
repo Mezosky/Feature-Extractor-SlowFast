@@ -1,6 +1,6 @@
 # 🎥 Features Extractor pySlowFast 🎥
 
-The following code has as main objective to obtain features using the [PySlowFast](https://github.com/facebookresearch/SlowFast) meta library. The code provided here is focused only on obtaining features, for this reason it is not possible to obtain inference in a native way in its execution.
+The following code has as main objective to obtain video-action features using pretrained models from the [PySlowFast](https://github.com/facebookresearch/SlowFast) library. The code provided here is focused only on obtaining features, for this reason it is not possible to obtain inference in a native way in its execution.
 
 The logic used for the extraction of features is generating an output prior to the head of each model arranged in the pySlowFast library. In this way we obtain for each architecture a temporal component referring to each time segment.
 
