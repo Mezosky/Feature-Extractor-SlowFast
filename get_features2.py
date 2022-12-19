@@ -25,44 +25,49 @@ import ipdb
 # Logger
 log = logging.getLogger(__name__)
 
+
 def calculate_time_taken(start_time, end_time):
     hours = int((end_time - start_time) / 3600)
     minutes = int((end_time - start_time) / 60) - (hours * 60)
     seconds = int((end_time - start_time) % 60)
     return hours, minutes, seconds
 
-def create_csv(path, output_path,max_files='all'):
+
+def create_csv(path, output_path, max_files="all"):
     assert (
-        type(max_files) is not int or max_files != 'all'
+        type(max_files) is not int or max_files != "all"
     ), "You must enter a int from the 1 to the N"
-    
+
     if os.path.exists(output_path):
         proc_v = [v.split(".")[0] for v in os.listdir(output_path)]
         if len(proc_v) > 0:
             log.info(f"[Data] Already {len(proc_v)} files have been processed")
         entries = os.listdir(path)
-        entries = [v.split(".")[0] for v in entries if v.split(".")[0] not in proc_v]
+        entries = [
+            v.split(".")[0] for v in entries if v.split(".")[0] not in proc_v
+        ]
     else:
         entries = os.listdir(path)
         entries = [v.split(".")[0] for v in entries]
 
     df = pd.DataFrame(entries)
 
-    if max_files == 'all':
-        path_csv = path + '/videos_list.csv'
+    if max_files == "all":
+        path_csv = path + "/videos_list.csv"
         if os.path.exists(path_csv):
             os.remove(path_csv)
-        df.to_csv(path_csv,index=False, header=False)
+        df.to_csv(path_csv, index=False, header=False)
 
     else:
         indices = np.array_split(df.index, max_files)
         for i in range(max_files):
-            path_csv = path + f'/videos_list_{i+1}.csv'
+            path_csv = path + f"/videos_list_{i+1}.csv"
             if os.path.exists(path_csv):
                 os.remove(path_csv)
 
             data_csv = df.loc[indices[i]]
             data_csv.to_csv(path_csv, index=False, header=False)
+
 
 @torch.no_grad()
 def perform_inference(test_loader, model, cfg):
@@ -117,7 +122,9 @@ def test(cfg):
 
     # Comprobate and/or create ouput folder.
     try:
-        folder_feature_name = cfg.TRAIN.CHECKPOINT_FILE_PATH.split("/")[-1].split(".")[0]
+        folder_feature_name = cfg.TRAIN.CHECKPOINT_FILE_PATH.split("/")[
+            -1
+        ].split(".")[0]
     except:
         folder_feature_name = cfg.MODEL.ARCH
     output_path = os.path.join(cfg.OUTPUT_DIR, folder_feature_name)
@@ -125,7 +132,7 @@ def test(cfg):
     if not os.path.exists(output_path):
         os.mkdir(output_path)
         log.info(f"[Data] The directory {folder_feature_name} was created!")
-    
+
     # Build the video model and print model statistics.
     model = build_model(cfg)
     cu.load_test_checkpoint(cfg, model)
@@ -135,16 +142,22 @@ def test(cfg):
     # Check if the video list are all the videos or just a part of the list.
     if cfg.NUMBER_CSV == None:
         create_csv(cfg.DATA.PATH_TO_DATA_DIR, output_path)
-        videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, "videos_list.csv")
+        videos_list_file = os.path.join(
+            cfg.DATA.PATH_TO_DATA_DIR, "videos_list.csv"
+        )
     else:
-        videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, f"videos_list_{cfg.NUMBER_CSV}.csv")
+        videos_list_file = os.path.join(
+            cfg.DATA.PATH_TO_DATA_DIR, f"videos_list_{cfg.NUMBER_CSV}.csv"
+        )
 
     log.info("[Data] Loading Video List...")
     with open(videos_list_file) as f:
-        videos = sorted([x.strip() for x in f.readlines() if len(x.strip()) > 0])
-    
+        videos = sorted(
+            [x.strip() for x in f.readlines() if len(x.strip()) > 0]
+        )
+
     log.info(f"[Data] {len(videos)} videos to be processed...")
-    
+
     rejected_vids = []
     metadata_json_file = {}
     start_time = time.time()
@@ -152,22 +165,26 @@ def test(cfg):
 
         # Create video testing loaders.
         path_to_vid = os.path.join(vid_root, os.path.split(vid)[0])
-        vid_id = os.path.split(vid)[1]      
+        vid_id = os.path.split(vid)[1]
 
         out_path = os.path.join(output_path, os.path.split(vid)[0])
-        out_path_metadata = os.path.join(output_path, 'metadata')
+        out_path_metadata = os.path.join(output_path, "metadata")
         out_file = vid_id.split(".")[0] + ".npy"
 
         log.info(f"[Model Inference] {vid_no + 1}.- Processing {vid}...")
         try:
             dataset = VideoSetDecord5(cfg, path_to_vid, vid_id)
-            log.info(f"[Model Inference]] {vid_no + 1}.- Video {vid} Processed.")
+            log.info(
+                f"[Model Inference]] {vid_no + 1}.- Video {vid} Processed."
+            )
         except Exception as e:
-            #print(f"{vid_no + 1}. {vid} cannot be read with error {e}")
-            log.warning(f"[Model Inference] {vid_no + 1}.- Video {vid} cannot be read with error {e}.")
+            # print(f"{vid_no + 1}. {vid} cannot be read with error {e}")
+            log.warning(
+                f"[Model Inference] {vid_no + 1}.- Video {vid} cannot be read with error {e}."
+            )
             rejected_vids.append(vid)
             continue
-        
+
         test_loader = torch.utils.data.DataLoader(
             dataset,
             batch_size=cfg.TEST.BATCH_SIZE,
@@ -177,22 +194,24 @@ def test(cfg):
             pin_memory=cfg.DATA_LOADER.PIN_MEMORY,
             drop_last=False,
         )
-        
+
         # Perform multi-view test on the entire dataset.
         feat_arr = perform_inference(test_loader, model, cfg)
         os.makedirs(out_path, exist_ok=True)
-        
-        metadata_json_file[vid] = \
-            {"fps":25, 
-            "duration":cfg.DATA.NUM_FRAMES*feat_arr.shape[0]/25, 
-            "frames":cfg.DATA.NUM_FRAMES*feat_arr.shape[0]}
-        
-        np.save(os.path.join(out_path, out_file), feat_arr)
+
+        if not feat_arr is None:
+            metadata_json_file[vid] = {
+                "fps": 25,
+                "duration": cfg.DATA.NUM_FRAMES * feat_arr.shape[0] / 25,
+                "frames": cfg.DATA.NUM_FRAMES * feat_arr.shape[0],
+            }
+            np.save(os.path.join(out_path, out_file), feat_arr)
+
         dataset = None
         test_loader = None
-    
+
     log.info("[Data] Rejected Videos: {}".format(rejected_vids))
-    
+
     # os.makedirs(out_path_metadata, exist_ok=True)
     # with open(os.path.join(out_path_metadata, 'metadata_videos.json'), 'w') as f:
     #     json.dump(metadata_json_file, f, indent=2)
@@ -200,5 +219,7 @@ def test(cfg):
 
     end_time = time.time()
     hours, minutes, seconds = calculate_time_taken(start_time, end_time)
-    log.info(f"Processed {len(videos)} videos with the model {cfg.MODEL.MODEL_NAME}, \
-    it took a time of: {hours} hour(s), {minutes} minute(s) and {seconds} second(s)")
+    log.info(
+        f"Processed {len(videos)} videos with the model {cfg.MODEL.MODEL_NAME}, \
+    it took a time of: {hours} hour(s), {minutes} minute(s) and {seconds} second(s)"
+    )

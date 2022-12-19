@@ -124,19 +124,19 @@ def build_model(cfg, gpu_id=None):
     else:
         raise Exception("You have not specified a video model.")
 
-    if cfg.BN.NORM_TYPE == "sync_batchnorm_apex":
-        try:
-            import apex
-        except ImportError:
-            raise ImportError("APEX is required for this model, please install")
+    # if cfg.BN.NORM_TYPE == "sync_batchnorm_apex":
+    #     try:
+    #         import apex
+    #     except ImportError:
+    #         raise ImportError("APEX is required for this model, please install")
 
-        logger.info("Converting BN layers to Apex SyncBN")
-        process_group = apex.parallel.create_syncbn_process_group(
-            group_size=cfg.BN.NUM_SYNC_DEVICES
-        )
-        model = apex.parallel.convert_syncbn_model(
-            model, process_group=process_group
-        )
+    #     logger.info("Converting BN layers to Apex SyncBN")
+    #     process_group = apex.parallel.create_syncbn_process_group(
+    #         group_size=cfg.BN.NUM_SYNC_DEVICES
+    #     )
+    #     model = apex.parallel.convert_syncbn_model(
+    #         model, process_group=process_group
+    #     )
 
     if cfg.NUM_GPUS:
         if gpu_id is None:
@@ -161,6 +161,6 @@ def build_model(cfg, gpu_id=None):
         if cfg.MODEL.FP16_ALLREDUCE:
             model.register_comm_hook(
                 state=None, hook=comm_hooks_default.fp16_compress_hook
-            )
+            ) #nqa
 
     return model

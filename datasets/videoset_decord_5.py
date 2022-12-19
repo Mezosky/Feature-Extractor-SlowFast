@@ -64,7 +64,7 @@ class VideoSetDecord5(torch.utils.data.Dataset):
     def _check_video(self):
 
         assert os.path.exists(self.path_to_vid), "{} file not found".format(self.path_to_vid)
-
+        frames = None
         try:
             # set the step size, the input and output
             # Load frames
@@ -75,6 +75,7 @@ class VideoSetDecord5(torch.utils.data.Dataset):
             logger.info(
                 f"Failed to load video from {self.path_to_vid} with error {e}"
             )
+
 
         return frames
 
