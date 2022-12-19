@@ -5,24 +5,10 @@ the Head using the configuration file.
 
 import math
 import torch
-from fvcore.common.registry import Registry
-from torch.distributed.algorithms.ddp_comm_hooks import (
-    default as comm_hooks_default,)
 
-import slowfast.utils.logging as logging
-from slowfast.models.video_model_builder import _POOL1, ResNet
-
+from slowfast.models.video_model_builder import _POOL1
 from .video_model_builder import MvitFeat, ResnetFeat, SlowFastFeat, X3DFeat
-from .head_helper import ResNetBasicHead, TransformerBasicHead, X3DHead
-
-# logger = logging.get_logger(__name__)
-
-# MODEL_REGISTRY = Registry("MODEL")
-# MODEL_REGISTRY.__doc__ = """
-# Registry for video model.
-# The registered object will be called with `obj(cfg)`.
-# The call should return a `torch.nn.Module` object.
-# """
+from .head_helper import ResNetBasicHead, X3DHead
 
 def build_model(cfg, gpu_id=None):
     """
@@ -124,20 +110,6 @@ def build_model(cfg, gpu_id=None):
     else:
         raise Exception("You have not specified a video model.")
 
-    # if cfg.BN.NORM_TYPE == "sync_batchnorm_apex":
-    #     try:
-    #         import apex
-    #     except ImportError:
-    #         raise ImportError("APEX is required for this model, please install")
-
-    #     logger.info("Converting BN layers to Apex SyncBN")
-    #     process_group = apex.parallel.create_syncbn_process_group(
-    #         group_size=cfg.BN.NUM_SYNC_DEVICES
-    #     )
-    #     model = apex.parallel.convert_syncbn_model(
-    #         model, process_group=process_group
-    #     )
-
     if cfg.NUM_GPUS:
         if gpu_id is None:
             # Determine the GPU used by the current process
@@ -148,6 +120,11 @@ def build_model(cfg, gpu_id=None):
         model = model.cuda(device=cur_device)
     # Use multi-process data parallel model in the multi-gpu setting
     if cfg.NUM_GPUS > 1:
+        if gpu_id is None:
+            # Determine the GPU used by the current process
+            cur_device = torch.cuda.current_device()
+        else:
+            cur_device = gpu_id
         # Make model replica operate on the current device
         model = torch.nn.parallel.DistributedDataParallel(
             module=model,
@@ -158,9 +135,5 @@ def build_model(cfg, gpu_id=None):
             or cfg.MODEL.MODEL_NAME == "ContrastiveModel"
             else False,
         )
-        if cfg.MODEL.FP16_ALLREDUCE:
-            model.register_comm_hook(
-                state=None, hook=comm_hooks_default.fp16_compress_hook
-            ) #nqa
 
     return model
