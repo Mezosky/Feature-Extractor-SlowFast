@@ -25,14 +25,25 @@ def main():
                             format='%(asctime)s - %(name)s - %(levelname)s: %(message)s', 
                             datefmt='%m/%d/%Y %I:%M:%S %p'
                             )
-        logging.info('Initializing the Logger')
+        # set up logging to console
+        console = logging.StreamHandler()
+        console.setLevel(logging.DEBUG)
+        # set a format which is simpler for console use
+        formatter = logging.Formatter("%(asctime)s %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p")
+        console.setFormatter(formatter)
+        # add the handler to the root logger
+        logging.getLogger("").addHandler(console)
+        log = logging.getLogger(__name__)
+
+        # logging the initialization
+        log.info('Initializing the Logger')
 
         # Load the cfg file
         cfg = load_config(args, path_to_config)
         
         # Select GPU
         torch.cuda.set_device(0)
-        print('Device GPU: ', torch.cuda.current_device())
+        print('[GPU]: Device', torch.cuda.current_device())
         
         # Check if the cfg file is for test
         if cfg.TEST.ENABLE:

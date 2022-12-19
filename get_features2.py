@@ -39,7 +39,7 @@ def create_csv(path, output_path,max_files='all'):
     if os.path.exists(output_path):
         proc_v = [v.split(".")[0] for v in os.listdir(output_path)]
         if len(proc_v) > 0:
-            print(f"Already {len(proc_v)} files have been processed")
+            log.info(f"[Data] Already {len(proc_v)} files have been processed")
         entries = os.listdir(path)
         entries = [v.split(".")[0] for v in entries if v.split(".")[0] not in proc_v]
     else:
@@ -121,9 +121,10 @@ def test(cfg):
     except:
         folder_feature_name = cfg.MODEL.ARCH
     output_path = os.path.join(cfg.OUTPUT_DIR, folder_feature_name)
+
     if not os.path.exists(output_path):
         os.mkdir(output_path)
-        print(f"The directory {cfg.MODEL.MODEL_NAME} was created!")
+        log.info(f"[Data] The directory {folder_feature_name} was created!")
     
     # Build the video model and print model statistics.
     model = build_model(cfg)
@@ -138,14 +139,11 @@ def test(cfg):
     else:
         videos_list_file = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, f"videos_list_{cfg.NUMBER_CSV}.csv")
 
-    print("Loading Video List...")
+    log.info("[Data] Loading Video List...")
     with open(videos_list_file) as f:
         videos = sorted([x.strip() for x in f.readlines() if len(x.strip()) > 0])
     
-    print("#----------------------------------------------------------#")
-    log.info(f"{len(videos)} videos to be processed...")
-    print(f"{len(videos)} videos to be processed...")
-    print("#----------------------------------------------------------#")
+    log.info(f"[Data] {len(videos)} videos to be processed...")
     
     rejected_vids = []
     metadata_json_file = {}
@@ -160,14 +158,13 @@ def test(cfg):
         out_path_metadata = os.path.join(output_path, 'metadata')
         out_file = vid_id.split(".")[0] + ".npy"
 
-        print(f"{vid_no + 1}.- Processing {vid}...")
+        log.info(f"[Model Inference] {vid_no + 1}.- Processing {vid}...")
         try:
             dataset = VideoSetDecord5(cfg, path_to_vid, vid_id)
-            log.info(f"{vid_no + 1}.- Video {vid} Processed.")
+            log.info(f"[Model Inference]] {vid_no + 1}.- Video {vid} Processed.")
         except Exception as e:
-            print(f"{vid_no + 1}. {vid} cannot be read with error {e}")
-            log.warning(f"{vid_no + 1}.- Video {vid} cannot be read with error {e}.")
-            print("#----------------------------------------------------------#")
+            #print(f"{vid_no + 1}. {vid} cannot be read with error {e}")
+            log.warning(f"[Model Inference] {vid_no + 1}.- Video {vid} cannot be read with error {e}.")
             rejected_vids.append(vid)
             continue
         
@@ -193,23 +190,15 @@ def test(cfg):
         np.save(os.path.join(out_path, out_file), feat_arr)
         dataset = None
         test_loader = None
-        print("#----------------------------------------------------------#")
-
     
-    print("Rejected Videos: {}".format(rejected_vids))
+    log.info("[Data] Rejected Videos: {}".format(rejected_vids))
     
     # os.makedirs(out_path_metadata, exist_ok=True)
     # with open(os.path.join(out_path_metadata, 'metadata_videos.json'), 'w') as f:
     #     json.dump(metadata_json_file, f, indent=2)
     #     print("New json file was created to save the metadata.")
 
-
     end_time = time.time()
     hours, minutes, seconds = calculate_time_taken(start_time, end_time)
     log.info(f"Processed {len(videos)} videos with the model {cfg.MODEL.MODEL_NAME}, \
     it took a time of: {hours} hour(s), {minutes} minute(s) and {seconds} second(s)")
-    print(
-        f"Processed {len(videos)} videos with the model {cfg.MODEL.MODEL_NAME}, \
-        it took a time of: {hours} hour(s), {minutes} minute(s) and {seconds} second(s)"
-    )
-    print("#----------------------------------------------------------#")

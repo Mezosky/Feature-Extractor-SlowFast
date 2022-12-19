@@ -24,7 +24,6 @@ from .head_helper import ResNetBasicHead, TransformerBasicHead, X3DHead
 # The call should return a `torch.nn.Module` object.
 # """
 
-
 def build_model(cfg, gpu_id=None):
     """
     Builds the models to get features from videos.
