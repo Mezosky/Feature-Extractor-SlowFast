@@ -10,11 +10,12 @@ The logic used for the extraction of features is generating an output prior to t
 
 # Installation
 
-To install and run the current code, you must install the [SlowFast library](https://github.com/facebookresearch/SlowFast/blob/main/INSTALL.md). In other hand, you must install:
+To install and run the current code, you must install the [pySlowFast framework](https://github.com/facebookresearch/SlowFast/blob/main/INSTALL.md). In other hand, you must install:
 
 ```
 pip install scipy
 pip install moviepy
+pip install decord
 ```
 
 Note: Sometimes `moviepy` may give some problems to execute the code, in that case please try this:
