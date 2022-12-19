@@ -8,11 +8,7 @@ TRAIN:
   CHECKPOINT_PERIOD: 1
   AUTO_RESUME: True
 DATA:
-<<<<<<< HEAD
-  PATH_TO_DATA_DIR: "/data/imeza/ActivityNet/videos"
-=======
-  PATH_TO_DATA_DIR: "/data/imeza/ActivityNet/ActivityNet-apophis/videos/"
->>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2
+  PATH_TO_DATA_DIR: "/data/imeza/ActivityNet/Activity_Net_videos_rescale/"
   VID_EXT: ".mp4"
   NUM_FRAMES: 8
   SAMPLING_RATE: 1
@@ -60,9 +56,5 @@ DATA_LOADER:
 NUM_GPUS: 1
 MULTIPLE_PROCESS: 5
 OUTPUT_DIR: "/data/imeza/ActivityNet/AN_Features"
-<<<<<<< HEAD
 RNG_SEED: 0
 NUMBER_CSV: 1
-=======
-RNG_SEED: 0
->>>>>>> 78227c6e1f527caf6d3fcf8525e7d47e69c682b2
