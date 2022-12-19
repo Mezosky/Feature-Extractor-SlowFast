@@ -1,29 +1,21 @@
 import os
 import math
-import random
-import time
-from io import BytesIO
 import torch
 import torch.utils.data
 import numpy as np
-from parse import parse
-import av
-import cv2
-from moviepy.video.io.VideoFileClip import VideoFileClip
 
 from decord import VideoReader
-from decord import cpu, gpu
+from decord import cpu
 import decord
 
-import slowfast.datasets.decoder as decoder
-import slowfast.datasets.transform as transform
-import slowfast.datasets.video_container as container
 from slowfast.datasets.utils import pack_pathway_output
 from slowfast.datasets.utils import spatial_sampling
 from slowfast.datasets.utils import tensor_normalize
 from slowfast.datasets import DATASET_REGISTRY
 import slowfast.utils.logging as logging
 
+from typing import Any
+from typing import Union
 
 logger = logging.get_logger(__name__)
 # Set how default a torch tensor
@@ -61,7 +53,7 @@ class VideoSetDecord(torch.utils.data.Dataset):
         else:
             self._get_frames_long_video()
 
-    def _check_video(self):
+    def _check_video(self) -> Union[VideoReader, Any]:
 
         assert os.path.exists(self.path_to_vid), "{} file not found".format(
             self.path_to_vid
@@ -182,6 +174,7 @@ class VideoSetDecord(torch.utils.data.Dataset):
                 index of the video replacement that can be decoded.
         """
 
+        output_frames = None
         if self.cfg.LOAD_SHORT_VIDEOS:
             return pack_pathway_output(self.cfg, self.frames[index])
 
