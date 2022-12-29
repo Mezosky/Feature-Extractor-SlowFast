@@ -19,7 +19,6 @@ import ipdb
 def benchmark(input_path: str) -> None:
     # Initializing the parse setting with the facebook framework
     args = parse_args()
-
     # Load config files names
     configs_files = os.listdir(input_path)
 
@@ -50,12 +49,15 @@ def benchmark(input_path: str) -> None:
     json_dict = {}
 
     for config_file in configs_files:
+        print(config_file)
+        
         # Start of run time
         start_time = time.time()
         name = str(config_file.split(".")[0])
 
         # Load a config yaml
-        cfg = load_config(args, config_file)
+        config_path = os.path.join(input_path, config_file)
+        cfg = load_config(args, config_path)
 
         # Select GPU
         torch.cuda.set_device(0)
@@ -82,18 +84,19 @@ def benchmark(input_path: str) -> None:
 
     # Save execution time in json
     log.info("[Benchmark-Data] Saving data...")
-    with open("./test/feat_output/execution_time", "w") as outfile:
+    os.mkdir("./test/feat_output/")
+    with open("./test/feat_output/execution_time.json", "w") as outfile:
         json.dump(json_dict, outfile)
 
 
 if __name__ == "__main__":
 
     # Initializing arg parser
-    parser = argparse.ArgumentParser()
-    # Input path
-    parser.add_argument("-in", "--input_path", type=str, help="input path")
-    # Get the input args
-    args = parser.parse_args()
-
+    # parser = argparse.ArgumentParser()
+    # # Input path
+    # parser.add_argument("--input", type=str, help="input path")
+    # # Get the input args
+    # args = vars(parser.parse_args())
+    # ipdb.set_trace()
     # Run the benchmark function
-    benchmark(args.p)
+    benchmark("./configs_files/test/")

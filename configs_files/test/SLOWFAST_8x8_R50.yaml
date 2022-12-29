@@ -60,6 +60,6 @@ DETECTION:
   ENABLE: False
 NUM_GPUS: 1
 NUM_SHARDS: 1
-OUTPUT_DIR: "./configs_files/test/feat_output"
+OUTPUT_DIR: "./test/feat_output"
 RNG_SEED: 0
 NUMBER_CSV: None
