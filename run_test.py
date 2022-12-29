@@ -52,6 +52,7 @@ def benchmark(input_path: str) -> None:
     for config_file in configs_files:
         # Start of run time
         start_time = time.time()
+        name = str(config_file.split(".")[0])
 
         # Load a config yaml
         cfg = load_config(args, config_file)
@@ -62,7 +63,10 @@ def benchmark(input_path: str) -> None:
 
         # Check if the cfg file is for test
         if cfg.TEST.ENABLE:
-            launch_job(cfg=cfg, init_method=args.init_method, func=test)
+            try:
+                launch_job(cfg=cfg, init_method=args.init_method, func=test)
+            except:
+                log.info(f"Error with the model {name}.")
         else:
             raise Exception(
                 "This function can only get features, classification \
@@ -71,7 +75,6 @@ def benchmark(input_path: str) -> None:
 
         # Time of completion of execution
         final_time = time.time() - start_time
-        name = str(config_file.split(".")[0])
         log.info(f"[Benchmark] The model {name} took {final_time} [s]")
 
         # Save data in the dictionary

@@ -54,6 +54,6 @@ DATA_LOADER:
   NUM_WORKERS: 0
   PIN_MEMORY: True
 NUM_GPUS: 1
-OUTPUT_DIR: "./test/feat_output"
+OUTPUT_DIR: "./configs_files/test/feat_output"
 RNG_SEED: 0
-NUMBER_CSV: 1
+NUMBER_CSV: None
