@@ -50,7 +50,7 @@ def benchmark(input_path: str) -> None:
 
     for config_file in configs_files:
         print(config_file)
-        
+
         # Start of run time
         start_time = time.time()
         name = str(config_file.split(".")[0])
@@ -82,9 +82,13 @@ def benchmark(input_path: str) -> None:
         # Save data in the dictionary
         json_dict[config_file] = final_time
 
+        # Clean memory
+        torch.cuda.empty_cache()
+
     # Save execution time in json
     log.info("[Benchmark-Data] Saving data...")
-    os.mkdir("./test/feat_output/")
+    if not os.path.exists("./test/feat_output/"):
+        os.mkdir("./test/feat_output/")
     with open("./test/feat_output/execution_time.json", "w") as outfile:
         json.dump(json_dict, outfile)
 

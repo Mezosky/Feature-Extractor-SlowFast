@@ -114,6 +114,22 @@ def test(cfg):
             slowfast/config/defaults.py
     """
 
+    # testing this
+    import wrapt
+    import tqdm.std
+
+    methods = ["__del__", "close"]
+    for method_name in methods:
+
+        @wrapt.patch_function_wrapper(tqdm.std.tqdm, method_name)
+        def new_del(wrapped, instance, args, kwargs):
+            try:
+                return wrapped(*args, **kwargs)
+            except AttributeError:
+                pass
+
+    # testing this
+
     # Set random seed from configs.
     np.random.seed(cfg.RNG_SEED)
     torch.manual_seed(cfg.RNG_SEED)
@@ -150,9 +166,23 @@ def test(cfg):
 
     log.info("[Data] Loading Video List...")
     with open(videos_list_file) as f:
+        # Load the video's name
         videos = sorted(
             [x.strip() for x in f.readlines() if len(x.strip()) > 0]
         )
+
+        # Comprobate if some features were processed (new)
+        if os.path.exists(output_path):
+            proc_v = [v.split(".")[0] for v in os.listdir(output_path)]
+            if len(proc_v) > 0:
+                log.info(
+                    f"[Data] Already {len(proc_v)} files have been processed"
+                )
+            videos = [
+                v.split(".")[0]
+                for v in videos
+                if v.split(".")[0] not in proc_v
+            ]
 
     log.info(f"[Data] {len(videos)} videos to be processed...")
 

@@ -221,6 +221,9 @@ class VideoSetDecord(torch.utils.data.Dataset):
         if self.cfg.LOAD_SHORT_VIDEOS:
             return len(self.frames)
         else:
+            # import ipdb
+
+            # ipdb.set_trace()
             return self.idx_video_tuples[-1][0][-1]
 
     @staticmethod
