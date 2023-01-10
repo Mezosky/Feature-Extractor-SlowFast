@@ -1,8 +1,8 @@
 # 🎥 Features Extractor pySlowFast 🎥
 
-The following code has as main objective to obtain video-action features using pretrained models from the [PySlowFast](https://github.com/facebookresearch/SlowFast) library. The code provided here is focused only on obtaining features using the library Decord.
+The following code has as main objective to obtain video-action features using pretrained models from the [PySlowFast](https://github.com/facebookresearch/SlowFast) framework. The code provided here is focused only on obtaining features using the library Decord.
 
-The logic used for the extraction of features is generating an output prior to the head of each model arranged in the pySlowFast library. In this way we obtain for each architecture a temporal component referring to each time segment.
+The logic used for the extraction of features is generating an output prior to the head of each model arranged in the pySlowFast framework. In this way we obtain for each architecture a temporal component referring to each time segment.
 
 <img src="https://www.mdpi.com/sustainability/sustainability-14-03275/article_deploy/html/images/sustainability-14-03275-g002.png" alt="drawing" width="300" class="center"/>
 

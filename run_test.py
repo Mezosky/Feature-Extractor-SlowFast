@@ -14,6 +14,7 @@ from configs.custom_config import load_config
 from get_features import test
 
 import ipdb
+import GPUtil
 
 
 def benchmark(input_path: str) -> None:
@@ -47,6 +48,7 @@ def benchmark(input_path: str) -> None:
 
     # dictionary to save execution data
     json_dict = {}
+    json_gpu_dict = {}
 
     for config_file in configs_files:
         print(config_file)
@@ -61,7 +63,7 @@ def benchmark(input_path: str) -> None:
 
         # Select GPU
         torch.cuda.set_device(0)
-        print("[GPU]: Device", torch.cuda.current_device())
+        log.info("[GPU]: Device", torch.cuda.current_device())
 
         # Check if the cfg file is for test
         if cfg.TEST.ENABLE:
@@ -79,11 +81,12 @@ def benchmark(input_path: str) -> None:
         final_time = time.time() - start_time
         log.info(f"[Benchmark] The model {name} took {final_time} [s]")
 
+        # Clear memory
+        torch.cuda.empty_cache()
+
         # Save data in the dictionary
         json_dict[config_file] = final_time
-
-        # Clean memory
-        torch.cuda.empty_cache()
+        json_gpu_dict[config_file] = GPUtil.getGPUs()[0].memoryUsed
 
     # Save execution time in json
     log.info("[Benchmark-Data] Saving data...")
@@ -91,16 +94,10 @@ def benchmark(input_path: str) -> None:
         os.mkdir("./test/feat_output/")
     with open("./test/feat_output/execution_time.json", "w") as outfile:
         json.dump(json_dict, outfile)
+    with open("./test/feat_output/gpu_info.json", "w") as outfile:
+        json.dump(json_gpu_dict, outfile)
 
 
 if __name__ == "__main__":
 
-    # Initializing arg parser
-    # parser = argparse.ArgumentParser()
-    # # Input path
-    # parser.add_argument("--input", type=str, help="input path")
-    # # Get the input args
-    # args = vars(parser.parse_args())
-    # ipdb.set_trace()
-    # Run the benchmark function
     benchmark("./configs_files/test/")

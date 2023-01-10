@@ -231,6 +231,7 @@ def test(cfg):
 
         dataset = None
         test_loader = None
+        # feat_arr = None
 
     log.info("[Data] Rejected Videos: {}".format(rejected_vids))
 
