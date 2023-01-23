@@ -17,6 +17,8 @@ import slowfast.utils.logging as logging
 from typing import Any
 from typing import Union
 
+import ipdb
+
 logger = logging.get_logger(__name__)
 # Set how default a torch tensor
 decord.bridge.set_bridge("torch")
@@ -157,6 +159,12 @@ class VideoSetDecord(torch.utils.data.Dataset):
         self.idx_video_tuples = self._gen_range_idx_frame(
             0, self.q_frames, self.frames_batch, self.out_size
         )
+        # Get the number of frames of buckets that contain de video.
+        if len(self.idx_video_tuples) * self.out_size < self.q_frames:
+            self.length = len(self.idx_video_tuples) + 1
+
+        else:
+            self.length = len(self.idx_video_tuples)
 
     def __getitem__(self, index):
         """
@@ -188,7 +196,7 @@ class VideoSetDecord(torch.utils.data.Dataset):
             s, e = int(i * self.out_size), int((i + 1) * self.out_size)
             output_frames = self.tuple_idx_frame[1][:, s:e, ...]
         elif index not in self.tuple_idx_frame[0]:
-            try:
+            if (index + 1) * self.out_size <= self.q_frames:
                 # get tuples
                 idx_tuple = self._get_tuple_idx(index, self.idx_video_tuples)
                 index_list = np.array(self.idx_video_tuples[idx_tuple][0])
@@ -207,8 +215,26 @@ class VideoSetDecord(torch.utils.data.Dataset):
                 i = index - np.array(index_list).min()
                 s, e = int(i * self.out_size), int((i + 1) * self.out_size)
                 output_frames = frames[:, s:e, ...]
-            except AssertionError as error:
-                print(error)
+
+            elif (index + 1) * self.out_size > self.q_frames:
+
+                # last frame loaded
+                last_frame_loaded = self.idx_video_tuples[-1][1][-1]
+                # load video
+                vr = VideoReader(self.path_to_vid, ctx=cpu(0))
+                # new padding
+                size_padd = self.out_size - (len(vr) - last_frame_loaded)
+                padd_frames = np.random.choice(
+                    range(0, (len(vr) - last_frame_loaded)),
+                    size=size_padd,
+                    replace=False,
+                )
+                frames = vr.get_batch(range(last_frame_loaded, len(vr), 1))
+                frames = self._transform_frames(frames)
+                frames_padd = torch.cat(
+                    (frames, frames[:, padd_frames, :, :]), 1
+                )
+                output_frames = frames_padd
 
         return pack_pathway_output(self.cfg, output_frames)
 
@@ -221,10 +247,7 @@ class VideoSetDecord(torch.utils.data.Dataset):
         if self.cfg.LOAD_SHORT_VIDEOS:
             return len(self.frames)
         else:
-            # import ipdb
-
-            # ipdb.set_trace()
-            return self.idx_video_tuples[-1][0][-1]
+            return self.length
 
     @staticmethod
     def _gen_range_idx_frame(a: int, b: int, c: int, d: int) -> list:
