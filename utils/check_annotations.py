@@ -21,7 +21,7 @@ def check_annotations(path1: str) -> None:
     for it, v in enumerate(ann_videos):
         if v['number_features'] < v['feature_end']:
             vi = v.copy()
-            e_video.append(v)
+            e_video.append(vi)
             v['feature_end'] = v['number_features']
         if v['number_features'] < v['feature_start']:
             s_video.append(v)
