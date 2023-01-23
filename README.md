@@ -8,6 +8,12 @@ The logic used for the extraction of features is generating an output prior to t
 
 > If you want to use the code read the "installation" and "How to use" section. For the execution of the script it is necessary to set/define in the configuration file some relevant inputs for each model.
 
+# Methodology
+
+Pretrained models with different sampling rates are used to obtain the features. In this way, the frames are iteratively traversed respecting the frame rate of each of the models. For those videos that have a number of frames with a multiplicity different from the frame rate of the models, the last bucket is filled with the random sampling of the last frames to obtain the temporal information.
+
+![methodology](./images/methodology.png)
+
 # Installation
 
 To install and run the current code, you must install the [pySlowFast framework](https://github.com/facebookresearch/SlowFast/blob/main/INSTALL.md). In other hand, you must install:
