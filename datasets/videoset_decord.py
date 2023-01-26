@@ -154,13 +154,17 @@ class VideoSetDecord(torch.utils.data.Dataset):
         # in the bath of frames.
         self.tuple_idx_frame = ([], None)
         # Define the large of the batch of frames
-        self.frames_batch = self.q_frames if self.q_frames < 1800 else 1800
+        length_cache_batch = int(1800 / self.out_size) * self.out_size
+        self.frames_batch = (
+            self.q_frames
+            if self.q_frames < length_cache_batch
+            else length_cache_batch
+        )
         # you get a tuple containing the indexes and frames
         self.idx_video_tuples = self._gen_range_idx_frame(
             0, self.q_frames, self.frames_batch, self.out_size
         )
         # Get the number of frames of buckets that contain de video.
-        # TO DO: Hay un error aquí
         if (
             self.idx_video_tuples[-1][0][-1] + 1
         ) * self.out_size < self.q_frames:
@@ -220,7 +224,6 @@ class VideoSetDecord(torch.utils.data.Dataset):
                 output_frames = frames[:, s:e, ...]
 
             elif (index + 1) * self.out_size > self.q_frames:
-                print("HELLO")
                 # last frame loaded
                 last_frame_loaded = self.idx_video_tuples[-1][1][-1]
                 # load video
@@ -280,7 +283,6 @@ class VideoSetDecord(torch.utils.data.Dataset):
                 (i, i + d * int((b - i) / d)),
             )
             list_out.append(idx_frame_tuple)
-
         return list_out
 
     @staticmethod

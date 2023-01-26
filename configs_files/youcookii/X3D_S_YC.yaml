@@ -21,7 +21,7 @@ TEST:
   # NUM_SPATIAL_CROPS: 1
   NUM_SPATIAL_CROPS: 3
 DATA:
-  PATH_TO_DATA_DIR: "/data/imeza/ActivityNet/Activity_Net_videos_rescale/"
+  PATH_TO_DATA_DIR: "/data/imeza/youcookii/without_subfolders/videos/"
   VID_EXT: ".mp4"
   NUM_FRAMES: 13
   SAMPLING_RATE: 1
@@ -59,6 +59,6 @@ DATA_LOADER:
   PIN_MEMORY: True
 NUM_GPUS: 1
 MULTIPLE_PROCESS: 5
-OUTPUT_DIR: "/data/imeza/ActivityNet/AN_Features"
+OUTPUT_DIR: "/data/imeza/youcookii/ycii_features"
 RNG_SEED: 0
-NUMBER_CSV: 2
+NUMBER_CSV: None

@@ -8,7 +8,7 @@ TRAIN:
   CHECKPOINT_PERIOD: 10
   AUTO_RESUME: True
 DATA:
-  PATH_TO_DATA_DIR: "/data/imeza/ActivityNet/Activity_Net_videos_rescale/"
+  PATH_TO_DATA_DIR: "/data/imeza/youcookii/without_subfolders/videos/"
   VID_EXT: ".mp4"
   USE_OFFSET_SAMPLING: True
   DECODING_BACKEND: torchvision
@@ -95,5 +95,5 @@ DATA_LOADER:
   PIN_MEMORY: True
 NUM_GPUS: 1
 MULTIPLE_PROCESS: 5
-OUTPUT_DIR: "/data/imeza/ActivityNet/AN_Features"
+OUTPUT_DIR: "/data/imeza/youcookii/ycii_features"
 RNG_SEED: 0
