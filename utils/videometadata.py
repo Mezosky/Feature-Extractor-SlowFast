@@ -41,11 +41,13 @@ def get_metadata(path_input: str, path_output: str) -> None:
 
 if __name__ == "__main__":
     path_input = (
+        # video path
         sys.argv[1]
         if not sys.argv[1] is None
         else "/data/imeza/charades/Charades_v2_320_240"
     )
     path_output = (
+        # metadata json path
         sys.argv[2]
         if not sys.argv[2] is None
         else "/data/imeza/charades/preprocessing/metadata_videos.json"

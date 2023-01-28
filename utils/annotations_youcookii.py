@@ -15,12 +15,14 @@ import ipdb
 def get_annotations(path1: str, path2: str, path3: str) -> None:
 
     # train file created by Cristian
-    with open("/data/imeza/youcookii/annotations/youcookII_training_tokens_w_objects.json") as f:
+    with open(
+        "/data/imeza/youcookii/annotations/youcookII_training_tokens_w_objects.json"
+    ) as f:
         json_train = json.load(f)
         json_train = json_train["annotations"]
 
     # test file created by Cristian
-    with open("/data/imeza/youcookii/annotations/youcookII_validation_tokens_w_objects.json") as f:
+    with open("d") as f:
         json_test = json.load(f)
         json_test = json_test["annotations"]
     # Create a list with the annotations files
@@ -36,20 +38,22 @@ def get_annotations(path1: str, path2: str, path3: str) -> None:
         new_json = []
         for e_file in tqdm(ann_file):
             try:
-                #ipdb.set_trace()
+                # ipdb.set_trace()
                 video_name = e_file["video"]
                 fps = metadata_video[video_name]["fps"]
                 frames = int(metadata_video[video_name]["frames"])
 
                 fpath = os.path.join(path2, f"{video_name}.npy")
                 n_features = np.load(fpath).shape[0]
-                
+
                 e_file["frame_start"] = e_file["time_start"] * fps
                 e_file["frame_end"] = e_file["time_end"] * fps
                 e_file["feature_start"] = e_file["frame_start"] / (
                     frames / n_features
                 )
-                e_file["feature_end"] = e_file["frame_end"] / (frames / n_features)
+                e_file["feature_end"] = e_file["frame_end"] / (
+                    frames / n_features
+                )
                 e_file["number_features"] = n_features
                 e_file["number_frames"] = frames
                 e_file["fps"] = fps
