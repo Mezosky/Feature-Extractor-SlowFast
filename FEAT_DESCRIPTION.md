@@ -47,9 +47,19 @@ In this way, two cycles are proposed for training, which are carried out in a ca
 
 [Mvit-v1](https://arxiv.org/pdf/2104.11227.pdf):
 
+Unlike conventional training with Transformers, where channel capacity and resolution are kept constant throughout the network, Multiscale Transformers have several stages where the channel-resolution scale varies. The idea is to perform a hierarchical expansion through different stages, starting with the original image resolution but a small channel dimension, expanding the channel capacity while reducing the spatial resolution at each stage. In this way, the first layers of the architecture operate at high spatial resolution to model simple low-level visual information, due to the smallness of the channels. Leaving the last layers capable of absorbing the temporal component.
+
 <p style="text-align:center;"><img src="./images/Mvit.png" height=180 class="center"></p>
 
-$$Q=P_Q(XW_Q), \, K=P_K(XW_K), \, V=P_V(XW_V)$$
+As mentioned above, MViT in each of its stages expands the width of the D channel and reduces the L resolution of the inputs. To perform the downsampling inside the Transformers blocks, MViT proposes the Pooling Attention layers. These layers receive a sequence $X \in \R^{L \times D}$ on which linear projections ($W$) and pooling operators ($P$) are applied:
+
+$$Q=P_Q(XW_Q), K=P_K(XW_K), V=P_V(XW_V)$$
+
+Finally:
+
+$$Z= Attn(Q, K, V) = Softmax(QK^T/\sqrt{D})V$$
+
+Polling attention allows to reduce the resolution between different stages of MViT by pooling on the Q tensor, on the other hand, it significantly reduces the computational and memory complexity of all tensors by pooling each of their operators.
 
 <p style="text-align:center;"><img src="./images/polling-attn.png" height=180 class="center"></p>
 
