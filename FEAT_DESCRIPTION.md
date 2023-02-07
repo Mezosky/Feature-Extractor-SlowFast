@@ -45,9 +45,7 @@ In this way, two cycles are proposed for training, which are carried out in a ca
 
 <p style="text-align:center;"><img src="./images/slowfast.png" height=180 class="center"></p>
 
-[Mvit-v1](https://arxiv.org/pdf/2104.11227.pdf):
-
-Unlike conventional training with Transformers, where channel capacity and resolution are kept constant throughout the network, Multiscale Transformers have several stages where the channel-resolution scale varies. The idea is to perform a hierarchical expansion through different stages, starting with the original image resolution but a small channel dimension, expanding the channel capacity while reducing the spatial resolution at each stage. In this way, the first layers of the architecture operate at high spatial resolution to model simple low-level visual information, due to the smallness of the channels. Leaving the last layers capable of absorbing the temporal component.
+[Mvit-v1](https://arxiv.org/pdf/2104.11227.pdf): Unlike conventional training with Transformers, where channel capacity and resolution are kept constant throughout the network, Multiscale Transformers have several stages where the channel-resolution scale varies. The idea is to perform a hierarchical expansion through different stages, starting with the original image resolution but a small channel dimension, expanding the channel capacity while reducing the spatial resolution at each stage. In this way, the first layers of the architecture operate at high spatial resolution to model simple low-level visual information, due to the smallness of the channels. Leaving the last layers capable of absorbing the temporal component.
 
 <p style="text-align:center;"><img src="./images/Mvit.png" height=180 class="center"></p>
 
@@ -63,11 +61,23 @@ Polling attention allows to reduce the resolution between different stages of MV
 
 <p style="text-align:center;"><img src="./images/polling-attn.png" height=180 class="center"></p>
 
-[Mvit-v2](https://arxiv.org/pdf/2112.01526.pdf):
+[Mvit-v2](https://arxiv.org/pdf/2112.01526.pdf): Despite the good results visualized with MViT-v1 for absorbing the temporal component in videos, this type of architecture has a crucial problem with the relationship of the tokens that compose the video. The way MViT models the interaction between two tokens changes depending on the absolute position of the images, even if the relative position has not changed, this generates a violation of one of the fundamental principles of computer vision which is the shift-invarance.
+
+To solve the problem, the authors propose to encode the relative position ($p$) between the two inputs i and j within the function $R_{p(i), p(j)} \in \R^d$. Then the attention is given by:
+
+$$Attn(Q, K, V) = Softmax((QK^T + E^{(rel)})/\sqrt{d})V$$
+
+E^(rel)_{ij}=Q_i R_{p(i),p(j)}$, however this operation is extremely computationally expensive $O(TWH)$, so they apply a decomposition of the computational distance between i and j obtaining a complexity of $O(T+W+H)$:
+
+$$ R*{p(i),p(j)}= R^h*{h(i),h(j)} + R^w _{w(i),w(j)} + R^t_{t(i),t(j)}$$
+
+Finally, in order to increase the information flow and facilitate the training of the polling attention, the residual connection of $P(Q)$ is proposed.
+
+$$Z=Attn(Q, K, V) + Q$$
 
 <p style="text-align:center;"><img src="./images/mvit2.png" height=180 class="center"></p>
 
-[RevMvit](https://openaccess.thecvf.com/content/CVPR2022/papers/Mangalam_Reversible_Vision_Transformers_CVPR_2022_paper.pdf):
+[RevMViT](https://openaccess.thecvf.com/content/CVPR2022/papers/Mangalam_Reversible_Vision_Transformers_CVPR_2022_paper.pdf):
 
 <p style="text-align:center;"><img src="./images/revmvit.png" height=180 class="center"></p>
 
