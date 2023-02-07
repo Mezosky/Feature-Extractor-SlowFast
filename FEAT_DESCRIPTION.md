@@ -67,7 +67,7 @@ To solve the problem, the authors propose to encode the relative position ($p$) 
 
 $$Attn(Q, K, V) = Softmax((QK^T + E^{(rel)})/\sqrt{d})V$$
 
-E^(rel)_{ij}=Q_i R_{p(i),p(j)}$, however this operation is extremely computationally expensive $O(TWH)$, so they apply a decomposition of the computational distance between i and j obtaining a complexity of $O(T+W+H)$:
+$E^(rel)_{ij}=Q_i R_{p(i),p(j)}$, however this operation is extremely computationally expensive $O(TWH)$, so they apply a decomposition of the computational distance between i and j obtaining a complexity of $O(T+W+H)$:
 
 $$ R*{p(i),p(j)}= R^h*{h(i),h(j)} + R^w _{w(i),w(j)} + R^t_{t(i),t(j)}$$
 
@@ -80,6 +80,8 @@ $$Z=Attn(Q, K, V) + Q$$
 [RevMViT](https://openaccess.thecvf.com/content/CVPR2022/papers/Mangalam_Reversible_Vision_Transformers_CVPR_2022_paper.pdf): One of the main problems when using Transformers is the GPU memory requirements that these structures demand when made deeper. This limits the development of very deep Transformer architectures, as the batch size would need considerable reductions to allow storage of intermediate states on the GPU.
 
 Given this problem, RevMViT proposes the use of reversible blocks for training an MViT model. The authors point out that the development of these architectures not only generates improvements in GPU memory reduction, but also improves model regularization.
+
+The idea of the reversible blocks is to use transformations that through the output can obtain the inputs of the intermediate stages. This saves GPU memory for generating the operations.
 
 $$
 \begin{bmatrix}
