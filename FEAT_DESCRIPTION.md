@@ -77,7 +77,59 @@ $$Z=Attn(Q, K, V) + Q$$
 
 <p style="text-align:center;"><img src="./images/mvit2.png" height=180 class="center"></p>
 
-[RevMViT](https://openaccess.thecvf.com/content/CVPR2022/papers/Mangalam_Reversible_Vision_Transformers_CVPR_2022_paper.pdf):
+[RevMViT](https://openaccess.thecvf.com/content/CVPR2022/papers/Mangalam_Reversible_Vision_Transformers_CVPR_2022_paper.pdf): One of the main problems when using Transformers is the GPU memory requirements that these structures demand when made deeper. This limits the development of very deep Transformer architectures, as the batch size would need considerable reductions to allow storage of intermediate states on the GPU.
+
+Given this problem, RevMViT proposes the use of reversible blocks for training an MViT model. The authors point out that the development of these architectures not only generates improvements in GPU memory reduction, but also improves model regularization.
+
+$$
+\begin{bmatrix}
+I_1 \\
+I_2
+\end{bmatrix}
+
+\underset{T_1}{\rightarrow}
+
+\begin{bmatrix}
+O_1 \\
+O_2
+\end{bmatrix}
+
+=
+
+\begin{bmatrix}
+I_1  \\
+I_2 + F(I_1)
+\end{bmatrix}
+
+= O
+
+
+$$
+
+$$
+\begin{bmatrix}
+I_1 \\
+I_2
+\end{bmatrix}
+
+\underset{T_2}{\rightarrow}
+
+\begin{bmatrix}
+O_1 \\
+O_2
+\end{bmatrix}
+
+=
+
+\begin{bmatrix}
+I_1 + G(I_2) \\
+I_2
+\end{bmatrix}
+
+= O
+
+
+$$
 
 <p style="text-align:center;"><img src="./images/revmvit.png" height=180 class="center"></p>
 
