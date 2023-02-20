@@ -9,15 +9,14 @@ import torch
 from slowfast.models.video_model_builder import ResNet, SlowFast, MViT, X3D
 from slowfast.models import MODEL_REGISTRY
 
-from typing import Union
-from typing import Any
+from typing import Union, Any, Tuple
 
 
 @MODEL_REGISTRY.register()
 class ResnetFeat(ResNet):
     def forward(
         self, x: torch.Tensor, bboxes=None
-    ) -> tuple[torch.Tensor, Union[torch.Tensor, Any]]:
+    ) -> Tuple[torch.Tensor, Union[torch.Tensor, Any]]:
         x = x[:]
         x = self.s1(x)
         x = self.s2(x)
@@ -40,7 +39,7 @@ class ResnetFeat(ResNet):
 class SlowFastFeat(SlowFast):
     def forward(
         self, x: torch.Tensor, bboxes=None
-    ) -> tuple[torch.Tensor, Union[torch.Tensor, Any]]:
+    ) -> Tuple[torch.Tensor, Union[torch.Tensor, Any]]:
         x = x[:]
         x = self.s1(x)
         x = self.s1_fuse(x)
@@ -67,7 +66,7 @@ class SlowFastFeat(SlowFast):
 class MvitFeat(MViT):
     def _forward_reversible(
         self, x: torch.Tensor
-    ) -> tuple[torch.Tensor, torch.Tensor]:
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Reversible specific code for forward computation.
         """
@@ -91,7 +90,7 @@ class MvitFeat(MViT):
 
         return x, feat
 
-    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
 
         x = x[0]
         x, bcthw = self.patch_embed(x)
@@ -166,7 +165,7 @@ class MvitFeat(MViT):
 class X3DFeat(X3D):
     def forward(
         self, x: torch.Tensor, bboxes=None
-    ) -> tuple[torch.Tensor, Union[torch.Tensor, Any]]:
+    ) -> Tuple[torch.Tensor, Union[torch.Tensor, Any]]:
         feat = None
         for module in self.children():
             if "X3DHead" in module._get_name():

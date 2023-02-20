@@ -22,7 +22,7 @@ def main():
         # Initialiaze the logger
         logging.basicConfig(
             filename="extractor_executions.log",
-            encoding="utf-8",
+            # encoding="utf-8",
             level=logging.INFO,
             format="%(asctime)s - %(name)s - %(levelname)s: %(message)s",
             datefmt="%m/%d/%Y %I:%M:%S %p",

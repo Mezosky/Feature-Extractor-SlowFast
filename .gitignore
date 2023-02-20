@@ -142,3 +142,5 @@ test_net.py
 test_video.py
 multiple_runs.py
 
+.rsyncignore
+remote
