@@ -149,6 +149,7 @@ def test(cfg):
 
     # Build the video model and print model statistics.
     model = build_model(cfg)
+
     cu.load_test_checkpoint(cfg, model)
 
     vid_root = os.path.join(cfg.DATA.PATH_TO_DATA_DIR, cfg.DATA.PATH_PREFIX)
@@ -179,9 +180,7 @@ def test(cfg):
                     f"[Data] Already {len(proc_v)} files have been processed"
                 )
             videos = [
-                v.split(".")[0]
-                for v in videos
-                if v.split(".")[0] not in proc_v
+                v.split(".")[0] for v in videos if v.split(".")[0] not in proc_v
             ]
 
     log.info(f"[Data] {len(videos)} videos to be processed...")

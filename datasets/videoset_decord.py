@@ -5,7 +5,9 @@ import torch.utils.data
 import numpy as np
 
 from decord import VideoReader
-from decord import cpu
+
+# from decord import cpu
+from decord import gpu
 import decord
 
 from slowfast.datasets.utils import pack_pathway_output
@@ -55,6 +57,9 @@ class VideoSetDecord(torch.utils.data.Dataset):
         else:
             self._get_frames_long_video()
 
+        self.MEAN = torch.tensor(self.cfg.DATA.MEAN).cuda()
+        self.STD = torch.tensor(self.cfg.DATA.STD).cuda()
+
     def _check_video(self) -> Union[VideoReader, Any]:
 
         assert os.path.exists(self.path_to_vid), "{} file not found".format(
@@ -64,7 +69,7 @@ class VideoSetDecord(torch.utils.data.Dataset):
         try:
             # set the step size, the input and output
             # Load frames
-            frames = VideoReader(self.path_to_vid, ctx=cpu(0))
+            frames = VideoReader(self.path_to_vid, ctx=gpu(0))
             self.step_size = 1
 
         except Exception as e:
@@ -94,9 +99,7 @@ class VideoSetDecord(torch.utils.data.Dataset):
         )
 
         # Normalize the frames
-        frames = tensor_normalize(
-            frames, self.cfg.DATA.MEAN, self.cfg.DATA.STD
-        )
+        frames = tensor_normalize(frames, self.MEAN, self.STD)
 
         # T H W C -> C T H W.
         frames = frames.permute(3, 0, 1, 2)
@@ -210,7 +213,8 @@ class VideoSetDecord(torch.utils.data.Dataset):
 
                 # load video
                 start_end_tuple = self.idx_video_tuples[idx_tuple][1]
-                vr = VideoReader(self.path_to_vid, ctx=cpu(0))
+                # vr = VideoReader(self.path_to_vid, ctx=cpu(0))
+                vr = VideoReader(self.path_to_vid, ctx=gpu(0))
                 frames = vr.get_batch(
                     range(start_end_tuple[0], start_end_tuple[1], 1)
                 )
@@ -227,7 +231,7 @@ class VideoSetDecord(torch.utils.data.Dataset):
                 # last frame loaded
                 last_frame_loaded = self.idx_video_tuples[-1][1][-1]
                 # load video
-                vr = VideoReader(self.path_to_vid, ctx=cpu(0))
+                vr = VideoReader(self.path_to_vid, ctx=gpu(0))
                 # new padding
                 size_padd = self.out_size - (len(vr) - last_frame_loaded)
                 padd_frames = np.random.choice(

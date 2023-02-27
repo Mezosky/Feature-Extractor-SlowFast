@@ -1,7 +1,7 @@
 TRAIN:
   ENABLE: False
   DATASET: videoset
-  CHECKPOINT_FILE_PATH: "/home/aad13288rp/c2d_baseline_8x8_IN_pretrain_400k.pkl"
+  CHECKPOINT_FILE_PATH: "/home/aad13288rp/video_model_checkpoints/c2d_baseline_8x8_IN_pretrain_400k.pkl"
   BATCH_SIZE: 64
   EVAL_PERIOD: 10
   CHECKPOINT_PERIOD: 1
@@ -53,8 +53,8 @@ TEST:
   BATCH_SIZE: 1
 DATA_LOADER:
   NUM_WORKERS: 0
-  PIN_MEMORY: True
+  PIN_MEMORY: False
 NUM_GPUS: 1
-OUTPUT_DIR: "/home/aad13288rp/storage-kirt/datasets/howto100m-sample/C2D"
+OUTPUT_DIR: "/home/aad13288rp/storage-kirt/datasets/howto100m-sample/C2D-10-workers"
 RNG_SEED: 0
 NUMBER_CSV: None
