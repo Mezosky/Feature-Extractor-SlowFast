@@ -27,7 +27,6 @@ pip install simplejson
 pip install psutil
 pip install opencv-python
 pip install tensorboard
-pip install pytorchvideo
 pip install moviepy
 pip install wrapt
 
@@ -73,6 +72,21 @@ No local packages or working download links found for PIL
 Then run `pip install pillowcase` (if https://pypi.org/project/pillowcase/) and try again (source https://stackoverflow.com/questions/71524023/python-module-cropresize-wont-install-pil-dependency-doesnt-recognize-pillow)
 If this does't work, consider commenting line declaring `PIL` as requirement in in `~/slowfast/setup.py` and install.
 
+
+### On A100 nodes
+
+If you encouter the following error:
+```bash
+symbol lookup error: ssh: undefined symbol: EVP_KDF_ctrl, version OPENSSL_1_1_1b
+```
+That means that potentially SSL library conflicts on CentOS 8 #10241, as explained here https://github.com/conda/conda/issues/10241. To solve run `export LD_PRELOAD=/usr/lib64/libcrypto.so`
+
+Finally
+```bash
+export DECORD_EOF_RETRY_MAX=20480
+```
+
+
 ## Comments
 
 ### C2D
@@ -106,56 +120,23 @@ for num in (seq 10)
 
 
 
-- No parallelization, no cuda decord, Using 1,376 MB of memory ~80% GPU usage
+-V100 CPU decord, no parallelization: Using 1,376 MB of memory ~80% GPU usage
 ```
-02/20/2023 03:11:48 PM [Model Inference]] 1.- Video 7OvRe-fodcI Processed.
-1443/1443 [00:37<00:00, 37.98it/s]
-
-02/20/2023 03:12:26 PM [Model Inference] 2.- Processing 8KVPDvga1o8...
-250/250 [00:04<00:00, 50.83it/s]
-
-02/20/2023 03:12:31 PM [Model Inference] 3.- Processing 8o1Boy_o748...
-468/468 [00:10<00:00, 46.01it/s]
-
-02/20/2023 03:12:41 PM [Model Inference] 4.- Processing MSTpm3dNi1A...
-366/366 [00:07<00:00, 48.20it/s]
-
-02/20/2023 03:12:49 PM [Model Inference] 5.- Processing MwjnINh4yo0...
-1121/1121 [00:22<00:00, 50.66it/s]
-
-02/20/2023 03:13:11 PM [Model Inference] 6.- Processing PLv2O_eyTXY...
-1209/1209 [00:26<00:00, 45.45it/s]
-
-02/20/2023 03:13:38 PM [Model Inference] 7.- Processing gJOUv59Tkyc...
-2411/2411 [00:58<00:00, 41.10it/s]
-
-02/20/2023 03:14:37 PM [Model Inference] 8.- Processing lHX1AbnG7Zo...
-1330/1330 [00:29<00:00, 45.59it/s]
-
-02/20/2023 03:15:07 PM [Model Inference] 9.- Processing uDWskutOM0c...
-1096/1096 [00:25<00:00, 42.54it/s]
-
-02/20/2023 03:15:33 PM [Model Inference] 10.- Processing zUlhL1Ldo4g...
-3342/3342 [01:21<00:00, 41.25it/s]
-
 02/20/2023 03:16:54 PM Processed 10 videos with the model ResNet,     it took a time of: 0 hour(s), 5 minute(s) and 6 second(s)
 ```
 
-No paralelization, cuda decord
+V100 CUDA decord, no paralelization:
 ```
 2/27/2023 06:52:52 PM Processed 103 videos with the model ResNet,     it took a time of: 0 hour(s), 40 minute(s) and 19 second(s)
 ```
 
-
-In 2 groups of 50:
+V100 CPU decord, in 2 groups of 50:
 ```
 02/22/2023 03:23:18 PM Processed 50 videos with the model ResNet,     it took a time of: 1 hour(s), 4 min ute(s) and 59 second(s) 
-
 02/22/2023 03:19:10 PM Processed 50 videos with the model ResNet,     it took a time of: 1 hour(s), 0 minute(s) and 48` second(s)
-
 ```
 
-- In 5 groups groups of 20 
+- V100 CPU decord, in 5 groups groups of 20:
 ```
 02/21/2023 07:28:33 PM Processed 20 videos with the model ResNet,     it took a time of: 1 hour(s), 9 minute(s) and 5 second(s)
 02/21/2023 07:27:57 PM Processed 20 videos with the model ResNet,     it took a time of: 1 hour(s), 7 minute(s) and 42 second(s)
@@ -165,7 +146,7 @@ In 2 groups of 50:
 ```
 
 
-- In 10 groups of 10: Using ~10,000 MB of memory, ~60%  GPU usage
+- V100 CPU decord, in 10 groups of 10: Using ~10,000 MB of memory, ~60%  GPU usage
 ```
 02/21/2023 10:25:21 PM Processed 10 videos with the model ResNet,     it took a time of: 0 hour(s), 42 minute(s) and 54 second(s)
 02/21/2023 10:26:55 PM Processed 10 videos with the model ResNet,     it took a time of: 0 hour(s), 44 minute(s) and 27 second(s)
@@ -179,7 +160,7 @@ In 2 groups of 50:
 02/21/2023 10:34:48 PM Processed 10 videos with the model ResNet,     it took a time of: 0 hour(s), 50 minute(s) and 12 second(s)
 ```
 
-- In 12 groups of ~8 each
+- V100 CPU decord in 12 groups of ~8 each: 
 ```
 02/22/2023 01:17:50 PM Processed 9 videos with the model ResNet,     it took a time of: 0 hour(s), 31 minute(s) and 48 second(s)
 02/22/2023 01:20:04 PM Processed 8 videos with the model ResNet,     it took a time of: 0 hour(s), 33 minute(s) and 35 second(s)
@@ -188,11 +169,17 @@ In 2 groups of 50:
 
 02/22/2023 01:17:49 PM Processed 8 videos with the model ResNet,     it took a time of: 0 hour(s), 30 minute(s) and 3 second(s)
 02/22/2023 01:21:06 PM Processed 8 videos with the model ResNet,     it took a time of: 0 hour(s), 32 minute(s) and 40 second(s)
-
 ```
 
 
+A100 CUDA decord, no parallelization, Mmo: 
+```
+02/28/2023 05:00:16 PM Processed 103 videos with the model ResNet,     it took a time of: 0 hour(s), 23 minute(s) and 45 second(s)
+```
 
-- In 15 groups of ~7 each, goes OOM
-- In 20 groups of 5 each, usinng 14,000 MB of RAM, ~35% GPU usage goes OOM
+A100 CUDA decord, in 2 groups of 50:
+```
+02/28/2023 05:29:57 PM Processed 50 videos with the model ResNet,     it took a time of: 0 hour(s), 21 minute(s) and 47 seconds
+02/28/2023 05:28:28 PM Processed 50 videos with the model ResNet,     it took a time of: 0 hour(s), 20 minute(s) and 11 seconds
+``` 
 
